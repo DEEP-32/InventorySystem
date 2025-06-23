@@ -2,8 +2,8 @@
 	"RemapUnityFiles": 
 	{
 		"Module.RiderShaderInfo.cpp.obj": [
-			"RiderShaderInfo.cpp.obj",
-			"PerModuleInline.gen.cpp.obj"
+			"PerModuleInline.gen.cpp.obj",
+			"RiderShaderInfo.cpp.obj"
 		]
 	}
 }
