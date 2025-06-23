@@ -3,9 +3,20 @@
 
 #include "Player/Inv_PlayerController.h"
 
-#include "Inventory.h"
+#include "EnhancedInputSubsystems.h"
+#include "Engine/LocalPlayer.h"
+
 
 void AInv_PlayerController::BeginPlay() {
 	Super::BeginPlay();
-	UE_LOG(LogInventory,Log,TEXT("Begin play for player controller"))
+	
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (IsValid(Subsystem)) {
+		Subsystem->AddMappingContext(DefaultIMC,0);
+	}
+	
+}
+
+void AInv_PlayerController::PrimaryInteract() {
+	
 }
