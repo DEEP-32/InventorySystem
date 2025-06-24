@@ -10,6 +10,7 @@
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
+#include "Items/Components/Inv_ItemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widgets/HUD/Inv_HUDWidget.h"
 
@@ -82,10 +83,25 @@ void AInv_PlayerController::TraceForItem() {
 	LastActor = ThisActor;
 	ThisActor = HitResult.GetActor();
 
+
+	if (!ThisActor.IsValid()) {
+		if (IsValid(HUDWidget)) {
+			HUDWidget->HidePickupMessage();
+		}
+	}
+
 	if (ThisActor == LastActor) return;
 
 	if (ThisActor.IsValid()) {
 		UE_LOG(LogInventory, Warning, TEXT("Started tracing a new actor: %s"), *ThisActor->GetName());
+
+		UInv_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UInv_ItemComponent>();
+
+		if (!IsValid(ItemComponent)) return;
+
+		if (IsValid(HUDWidget)) {
+			HUDWidget->ShowPickupMessage(ItemComponent->GetPickedUpMessage());
+		}
 	}
 
 	if (LastActor.IsValid()) {
