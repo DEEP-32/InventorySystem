@@ -11,6 +11,7 @@
 #include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Interaction/Inv_Highlightable.h"
+#include "InventoryManagement/Components/Inv_InventoryComponent.h"
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widgets/HUD/Inv_HUDWidget.h"
@@ -26,15 +27,26 @@ void AInv_PlayerController::Tick(float DeltaSeconds) {
 	TraceForItem();
 }
 
+void AInv_PlayerController::ToggleInventory() {
+	if (!InventoryComponent.IsValid()) {
+		return;
+	}
+
+	InventoryComponent->ToggleInventoryMenu();
+}
+
 void AInv_PlayerController::BeginPlay() {
 	Super::BeginPlay();
-	
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+		GetLocalPlayer());
 	if (IsValid(Subsystem)) {
 		for (UInputMappingContext* CurrentContext : DefaultIMCs) {
-			Subsystem->AddMappingContext(CurrentContext,0);
-		} 
+			Subsystem->AddMappingContext(CurrentContext, 0);
+		}
 	}
+
+	InventoryComponent = FindComponentByClass<UInv_InventoryComponent>();
 
 	CreateHUDWidget();
 }
@@ -44,7 +56,8 @@ void AInv_PlayerController::SetupInputComponent() {
 
 	UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent);
 
-	EnhancedInput->BindAction(PrimaryInteractionAction,ETriggerEvent::Started,this,&ThisClass::PrimaryInteract);
+	EnhancedInput->BindAction(PrimaryInteractionAction, ETriggerEvent::Started, this, &ThisClass::PrimaryInteract);
+	EnhancedInput->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this, &ThisClass::ToggleInventory);
 }
 
 void AInv_PlayerController::PrimaryInteract() {
@@ -52,19 +65,21 @@ void AInv_PlayerController::PrimaryInteract() {
 }
 
 void AInv_PlayerController::CreateHUDWidget() {
+	if (!IsLocalController()) {
+		return;
+	}
 
-	if (!IsLocalController()) return;
-
-	HUDWidget = CreateWidget<UInv_HUDWidget>(this,HUDWidgetClass);
+	HUDWidget = CreateWidget<UInv_HUDWidget>(this, HUDWidgetClass);
 	if (IsValid(HUDWidget)) {
 		HUDWidget->AddToViewport();
 	}
 }
 
 void AInv_PlayerController::TraceForItem() {
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) {
+		return;
+	}
 
-	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
-	
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize((ViewportSize));
 
@@ -73,8 +88,9 @@ void AInv_PlayerController::TraceForItem() {
 	FVector TraceStart;
 	FVector Forward;
 
-	if (!UGameplayStatics::DeprojectScreenToWorld(this,ScreenCenter,TraceStart,Forward))
+	if (!UGameplayStatics::DeprojectScreenToWorld(this, ScreenCenter, TraceStart, Forward)) {
 		return;
+	}
 
 	const FVector TraceEnd = TraceStart + (Forward * TraceLength);
 	FHitResult HitResult;
@@ -89,21 +105,26 @@ void AInv_PlayerController::TraceForItem() {
 		if (IsValid(HUDWidget)) {
 			HUDWidget->HidePickupMessage();
 		}
-	} 
+	}
 
-	if (ThisActor == LastActor) return;
+	if (ThisActor == LastActor) {
+		return;
+	}
 
 	if (ThisActor.IsValid()) {
 		UE_LOG(LogInventory, Warning, TEXT("Started tracing a new actor: %s"), *ThisActor->GetName());
 
 
-		if (UActorComponent* Highlightable = ThisActor->FindComponentByInterface(UInv_Highlightable::StaticClass()); IsValid(Highlightable)) {
+		if (UActorComponent* Highlightable = ThisActor->FindComponentByInterface(UInv_Highlightable::StaticClass());
+			IsValid(Highlightable)) {
 			IInv_Highlightable::Execute_Highlight(Highlightable);
 		}
-		
+
 		UInv_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UInv_ItemComponent>();
 
-		if (!IsValid(ItemComponent)) return;
+		if (!IsValid(ItemComponent)) {
+			return;
+		}
 
 		if (IsValid(HUDWidget)) {
 			HUDWidget->ShowPickupMessage(ItemComponent->GetPickedUpMessage());
@@ -112,9 +133,9 @@ void AInv_PlayerController::TraceForItem() {
 
 	if (LastActor.IsValid()) {
 		UE_LOG(LogInventory, Warning, TEXT("Stopped tracing last actor: %s"), *LastActor->GetName());
-		if (UActorComponent* Highlightable = LastActor->FindComponentByInterface(UInv_Highlightable::StaticClass()); IsValid(Highlightable)) {
+		if (UActorComponent* Highlightable = LastActor->FindComponentByInterface(UInv_Highlightable::StaticClass());
+			IsValid(Highlightable)) {
 			IInv_Highlightable::Execute_UnHighlight(Highlightable);
 		}
 	}
-	
 }

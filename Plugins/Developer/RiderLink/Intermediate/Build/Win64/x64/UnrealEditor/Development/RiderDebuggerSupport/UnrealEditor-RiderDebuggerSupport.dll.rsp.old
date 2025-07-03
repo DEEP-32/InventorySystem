@@ -36,7 +36,12 @@
 /FUNCTIONPADMIN:6
 /NOIMPLIB
 /NOEXP
-"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/Module.RiderDebuggerSupport.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/BlueprintStackGetter.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/DebugLogger.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/RiderDebuggerSupport.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/UnrealFunctions.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/WideStringWrapper.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/PerModuleInline.gen.cpp.obj"
 "G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderDebuggerSupport/Default.rc2.res"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/Core/UnrealEditor-Core.lib"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/CoreUObject/UnrealEditor-CoreUObject.lib"

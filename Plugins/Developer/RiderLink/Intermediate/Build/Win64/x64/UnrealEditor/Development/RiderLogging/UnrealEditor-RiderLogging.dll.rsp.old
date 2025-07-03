@@ -36,7 +36,9 @@
 /FUNCTIONPADMIN:6
 /NOIMPLIB
 /NOEXP
-"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderLogging/Module.RiderLogging.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderLogging/RiderLogging.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderLogging/RiderOutputDevice.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderLogging/PerModuleInline.gen.cpp.obj"
 "G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderLogging/Default.rc2.res"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/Core/UnrealEditor-Core.lib"
 "G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RD/UnrealEditor-RD.lib"

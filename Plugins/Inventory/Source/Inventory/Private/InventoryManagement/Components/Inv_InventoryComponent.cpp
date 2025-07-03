@@ -8,8 +8,15 @@
 #include "Widgets/Inventory/Base/Inv_InventoryBase.h"
 
 
-UInv_InventoryComponent::UInv_InventoryComponent() {
-	PrimaryComponentTick.bCanEverTick = false;
+UInv_InventoryComponent::UInv_InventoryComponent() { PrimaryComponentTick.bCanEverTick = false; }
+
+void UInv_InventoryComponent::ToggleInventoryMenu() {
+	if (bInventoryMenuOpen) {
+		CloseInventoryMenu();
+	}
+	else {
+		OpenInventoryMenu();
+	}
 }
 
 
@@ -20,11 +27,37 @@ void UInv_InventoryComponent::BeginPlay() {
 
 void UInv_InventoryComponent::ConstructInventory() {
 	OwningController = Cast<APlayerController>(GetOwner());
-	checkf(OwningController.IsValid(),TEXT("Inventory Component should have a Player controller as owner"));
-	if (!OwningController->IsLocalController()) return;
+	checkf(OwningController.IsValid(), TEXT("Inventory Component should have a Player controller as owner"));
+	if (!OwningController->IsLocalController()) { return; }
 
-	InventoryMenu = CreateWidget<UInv_InventoryBase>(OwningController.Get(),InventoryWidgetClass);
+	InventoryMenu = CreateWidget<UInv_InventoryBase>(OwningController.Get(), InventoryWidgetClass);
 	InventoryMenu->AddToViewport();
+	CloseInventoryMenu();
 }
 
+void UInv_InventoryComponent::OpenInventoryMenu() {
+	if (!IsValid(InventoryMenu)) return;
 
+	InventoryMenu->SetVisibility(ESlateVisibility::Visible);
+	bInventoryMenuOpen = true;
+
+	if (!OwningController.IsValid()) return;
+
+	FInputModeGameAndUI InputMode;
+	OwningController->SetInputMode(InputMode);
+	OwningController->SetShowMouseCursor(true);
+
+}
+void UInv_InventoryComponent::CloseInventoryMenu() {
+	if (!IsValid(InventoryMenu)) return;
+
+	InventoryMenu->SetVisibility(ESlateVisibility::Collapsed);
+	bInventoryMenuOpen = false;
+
+	if (!OwningController.IsValid()) return;
+
+	FInputModeGameOnly InputMode;
+	OwningController->SetInputMode(InputMode);
+
+	OwningController->SetShowMouseCursor(false);
+}

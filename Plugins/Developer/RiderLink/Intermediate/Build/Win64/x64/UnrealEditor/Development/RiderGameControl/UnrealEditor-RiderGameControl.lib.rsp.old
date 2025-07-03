@@ -6,6 +6,7 @@
 /NAME:"UnrealEditor-RiderGameControl.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderGameControl/Module.RiderGameControl.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderGameControl/RiderGameControl.cpp.obj"
+"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderGameControl/PerModuleInline.gen.cpp.obj"
 "G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderGameControl/Default.rc2.res"
 /OUT:"G:/Projects/Personnel/Unreal/InventorySystem/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development/RiderGameControl/UnrealEditor-RiderGameControl.lib"
