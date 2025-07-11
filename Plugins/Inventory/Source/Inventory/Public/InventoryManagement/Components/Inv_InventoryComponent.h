@@ -8,6 +8,8 @@
 #include "Inv_InventoryComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChanged, UInv_InventoryItem*, Item);
+
 class UInv_InventoryBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent),Blueprintable)
@@ -18,6 +20,9 @@ public:
 	UInv_InventoryComponent();
 
 	void ToggleInventoryMenu();
+
+	FInventoryItemChanged OnItemAdded;
+	FInventoryItemChanged OnItemRemoved;
 
 protected:
 	virtual void BeginPlay() override;
