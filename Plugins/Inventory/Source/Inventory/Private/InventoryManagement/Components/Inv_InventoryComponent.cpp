@@ -10,6 +10,11 @@
 
 UInv_InventoryComponent::UInv_InventoryComponent() { PrimaryComponentTick.bCanEverTick = false; }
 
+
+void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
+	OnNoRoomInInventory.Broadcast();
+}
+
 void UInv_InventoryComponent::ToggleInventoryMenu() {
 	if (bInventoryMenuOpen) {
 		CloseInventoryMenu();
