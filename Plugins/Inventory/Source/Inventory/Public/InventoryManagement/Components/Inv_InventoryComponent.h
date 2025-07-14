@@ -8,6 +8,7 @@
 #include "Inv_InventoryComponent.generated.h"
 
 
+class UInv_ItemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChanged, UInv_InventoryItem*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoRoomInInventory);
 
@@ -27,6 +28,12 @@ public:
 	FInventoryItemChanged OnItemAdded;
 	FInventoryItemChanged OnItemRemoved;
 	FNoRoomInInventory OnNoRoomInInventory;
+
+	UFUNCTION(Server,Reliable,Category="Inventory")
+	void Server_AddNewItem(UInv_ItemComponent* ItemComponent,int32 ItemCount);
+
+	UFUNCTION(Server,Reliable,Category="Inventory")
+	void Server_AddStackItem(UInv_ItemComponent* ItemComponent,int32 ItemCount,int32 Remainder);
 
 protected:
 	virtual void BeginPlay() override;

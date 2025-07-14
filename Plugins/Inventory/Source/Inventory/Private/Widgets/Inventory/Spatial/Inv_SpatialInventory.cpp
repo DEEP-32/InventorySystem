@@ -17,6 +17,10 @@ void UInv_SpatialInventory::NativeOnInitialized() {
 	ShowEquippable();
 }
 
+FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(const UInv_ItemComponent* ItemComponent) const {
+	return Super::HasRoomForItem(ItemComponent);
+}
+
 void UInv_SpatialInventory::ShowEquippable() {
 	SetActiveGrid(EquippableGrid, EquipButton);
 }

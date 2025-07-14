@@ -18,7 +18,26 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
 		OnNoRoomInInventory.Broadcast();
 	}
 
+	if (Result.Item.IsValid() && Result.bStackable) {
+		Server_AddStackItem(ItemComponent,Result.TotalRoomToFill, Result.Remainder);
+	}
+	else if (Result.TotalRoomToFill > 0) {
+		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0);
+	}
+
 	//TODO : Actually add the item to the inventory
+}
+
+void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 ItemCount) {
+
+
+}
+
+void UInv_InventoryComponent::Server_AddStackItem_Implementation(UInv_ItemComponent* ItemComponent, int32 ItemCount,
+	int32 Remainder) {
+
+
+
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu() {
@@ -29,6 +48,7 @@ void UInv_InventoryComponent::ToggleInventoryMenu() {
 		OpenInventoryMenu();
 	}
 }
+
 
 
 void UInv_InventoryComponent::BeginPlay() {
