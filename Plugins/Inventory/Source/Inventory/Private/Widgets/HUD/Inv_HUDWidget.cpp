@@ -19,7 +19,7 @@ void UInv_HUDWidget::NativeOnInitialized() {
 
 void UInv_HUDWidget::OnNoRoom() {
 
-	if (IsValid(InfoMessage)) {
+	if (!IsValid(InfoMessage)) {
 		return;
 	}
 
