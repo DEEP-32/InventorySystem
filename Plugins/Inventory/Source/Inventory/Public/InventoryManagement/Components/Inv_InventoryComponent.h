@@ -1,4 +1,4 @@
-﻿// Copyright DEEP-32
+// Copyright DEEP-32
 
 #pragma once
 
@@ -46,7 +46,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UInv_InventoryBase> InventoryMenu;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UInv_InventoryBase> InventoryWidgetClass;
 

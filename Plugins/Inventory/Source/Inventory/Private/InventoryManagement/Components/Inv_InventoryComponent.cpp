@@ -1,4 +1,4 @@
-﻿// Copyright DEEP-32
+// Copyright DEEP-32
 
 
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
