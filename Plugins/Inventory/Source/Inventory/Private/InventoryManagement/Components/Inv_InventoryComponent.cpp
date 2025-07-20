@@ -9,7 +9,7 @@
 #include "Widgets/Inventory/Base/Inv_InventoryBase.h"
 
 
-UInv_InventoryComponent::UInv_InventoryComponent() {
+UInv_InventoryComponent::UInv_InventoryComponent() : InventoryList( this ) {
 	PrimaryComponentTick.bCanEverTick = false;
 	bReplicateUsingRegisteredSubObjectList = true;
 	bInventoryMenuOpen = true;
@@ -40,6 +40,10 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
 
 void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 ItemCount) {
 	UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+
+	if (GetOwner()->GetNetMode() == NM_Standalone || GetOwner()->GetNetMode() == NM_ListenServer){
+		OnItemAdded.Broadcast(NewItem);
+	}
 	//TODO : Tell item component to destroy its owning actor
 }
 

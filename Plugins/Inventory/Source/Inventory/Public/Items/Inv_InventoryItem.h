@@ -15,12 +15,16 @@ class INVENTORY_API UInv_InventoryItem : public UObject {
 	GENERATED_BODY()
 
 public:
-
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool IsSupportedForNetworking() const override;
 
 public:
-	FORCEINLINE FInstancedStruct GetItemManifest() const {
-		return ItemManifest;
+	FORCEINLINE const FInv_ItemManifest& GetItemManifest() const {
+		return ItemManifest.Get<FInv_ItemManifest>();
+	}
+
+	FORCEINLINE FInv_ItemManifest& GetMutableItemManifest() {
+		return ItemManifest.GetMutable<FInv_ItemManifest>();
 	}
 
 	void SetItemManifest(const FInv_ItemManifest& NewManifest);
