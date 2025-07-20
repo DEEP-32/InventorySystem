@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
 #include "Items/Inv_InventoryItem.h"
+#include "Items/Components/Inv_ItemComponent.h"
 
 TArray<UInv_InventoryItem*> FInv_InventoryFastArray::GetAllItems() const {
 	TArray<UInv_InventoryItem*> Results;
@@ -35,9 +36,19 @@ void FInv_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedInd
 }
 
 UInv_InventoryItem* FInv_InventoryFastArray::AddEntry(UInv_ItemComponent* ItemComponent) {
+	check( OwningComponent );
+	AActor* Owner = OwningComponent->GetOwner();
+	check( Owner->HasAuthority() );
 
-	//TODO : Implement once item components is more complete.
-	return nullptr;
+	UInv_InventoryComponent* InventoryComponent = Cast<UInv_InventoryComponent>(OwningComponent);
+	if (!IsValid(InventoryComponent)) return nullptr;
+
+	FInv_InventoryEntry& NewEntry = ItemEntries.AddDefaulted_GetRef();
+	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(Owner);
+
+	InventoryComponent->AddRepSubobj( NewEntry.Item );
+	MarkItemDirty( NewEntry );
+	return NewEntry.Item;
 }
 
 UInv_InventoryItem* FInv_InventoryFastArray::AddEntry(UInv_InventoryItem* Item) {
@@ -45,10 +56,10 @@ UInv_InventoryItem* FInv_InventoryFastArray::AddEntry(UInv_InventoryItem* Item) 
 	AActor* Owner = OwningComponent->GetOwner();
 	check(Owner->HasAuthority());
 
-	FInv_InventoryEntry& Entry = ItemEntries.AddDefaulted_GetRef();
-	Entry.Item = Item;
+	FInv_InventoryEntry& NewEntry = ItemEntries.AddDefaulted_GetRef();
+	NewEntry.Item = Item;
 
-	MarkItemDirty(Entry); //For replication to happen
+	MarkItemDirty(NewEntry); //For replication to happen
 
 	return Item;
 

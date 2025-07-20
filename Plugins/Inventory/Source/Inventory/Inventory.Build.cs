@@ -25,7 +25,10 @@ public class Inventory : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "Engine","NetCore"
+				"Core", 
+				"Engine",
+				"NetCore",
+				"StructUtils"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
