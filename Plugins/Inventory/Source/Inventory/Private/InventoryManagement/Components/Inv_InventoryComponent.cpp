@@ -59,7 +59,7 @@ void UInv_InventoryComponent::ToggleInventoryMenu() {
 	}
 }
 
-void UInv_InventoryComponent::AddRepSubobj(UObject* Subobject) {
+void UInv_InventoryComponent::AddRepSubObj(UObject* Subobject) {
 	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && IsValid(Subobject))
 		AddReplicatedSubObject( Subobject );
 }

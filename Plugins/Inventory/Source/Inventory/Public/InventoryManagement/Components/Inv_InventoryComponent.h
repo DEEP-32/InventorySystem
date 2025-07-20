@@ -25,7 +25,7 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly,Category = "Inventory")
 	void TryAddItem(UInv_ItemComponent* ItemComponent);
 	void ToggleInventoryMenu();
-	void AddRepSubobj(UObject* Subobject);
+	void AddRepSubObj(UObject* Subobject);
 
 	FInventoryItemChanged OnItemAdded;
 	FInventoryItemChanged OnItemRemoved;
