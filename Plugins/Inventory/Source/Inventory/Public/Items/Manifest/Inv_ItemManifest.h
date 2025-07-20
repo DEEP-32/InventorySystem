@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Types/Inv_GridTypes.h"
 #include "StructUtils/InstancedStruct.h"
+#include "GameplayTagContainer.h"
 #include "Inv_ItemManifest.generated.h"
 
 /*
@@ -22,11 +23,15 @@ public:
 	
 public:
 	EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
+	FGameplayTag GetItemType() const {return ItemType;}
 	
 private:
 
 	UPROPERTY(EditAnywhere,Category="Inventory")
 	EInv_ItemCategory ItemCategory = EInv_ItemCategory::None;
+
+	UPROPERTY(EditAnywhere,Category="Inventory")
+	FGameplayTag ItemType;
 	
 };
 
