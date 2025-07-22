@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "Inv_ItemManifest.generated.h"
 
+struct FInv_ItemFragment;
 /*
 	The Item manifest contains all the information about an item for creating it.
 */
@@ -26,7 +27,9 @@ public:
 	FGameplayTag GetItemType() const {return ItemType;}
 	
 private:
-
+	UPROPERTY(EditAnywhere,Category="Inventory",meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
+	
 	UPROPERTY(EditAnywhere,Category="Inventory")
 	EInv_ItemCategory ItemCategory = EInv_ItemCategory::None;
 
