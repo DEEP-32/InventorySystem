@@ -17,7 +17,7 @@ class INVENTORY_API UInv_InventoryBase : public UUserWidget {
 
 public:
 
-	virtual FInv_SlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent) const {
+	virtual FInv_SlotAvailabilityResult HasRoomForItem(UInv_ItemComponent* ItemComponent) const {
 		return FInv_SlotAvailabilityResult();
 	}
 

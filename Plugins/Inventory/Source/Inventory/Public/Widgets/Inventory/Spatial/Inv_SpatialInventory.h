@@ -19,7 +19,7 @@ class INVENTORY_API UInv_SpatialInventory : public UInv_InventoryBase {
 public:
 	virtual void NativeOnInitialized() override;
 
-	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent) const override;
+	FInv_SlotAvailabilityResult HasRoomForItem(UInv_ItemComponent* ItemComponent) const override;
 
 private:
 

@@ -7,6 +7,8 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+struct FInv_ItemManifest;
+class UInv_ItemComponent;
 class UInv_InventoryComponent;
 class UCanvasPanel;
 class UInv_GridSlots;
@@ -18,16 +20,24 @@ class INVENTORY_API UInv_InventoryGrid : public UUserWidget {
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
+	
+public:
 	virtual void NativeOnInitialized() override;
 
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* Item);
 
-public:
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
+	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* Item);
+	
+
 
 private:
+	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* Item);
+	FInv_SlotAvailabilityResult HasRoomForItem(const FInv_ItemManifest& Item);
+
+	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result,UInv_InventoryItem* Item);
 
 	bool MatchesCategory(const UInv_InventoryItem* Item) const;
 

@@ -25,7 +25,9 @@ public:
 public:
 	EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
 	FGameplayTag GetItemType() const {return ItemType;}
-	
+
+	template<typename T> requires std::derived_from<T,FInv_ItemFragment>
+	const T* GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const;
 private:
 	UPROPERTY(EditAnywhere,Category="Inventory",meta = (ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
@@ -37,4 +39,19 @@ private:
 	FGameplayTag ItemType;
 	
 };
+
+template <typename T> requires std::derived_from<T,FInv_ItemFragment>
+const T* FInv_ItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const {
+
+	for (const TInstancedStruct<FInv_ItemFragment>& Fragment : Fragments) {
+		if (const T* FragmentPtr = Fragment.GetPtr<T>()) {
+			if (!FragmentPtr->GetFragmentTag().MatchesTag(Tag)) {
+				continue;	
+			}
+			return FragmentPtr;
+		}
+	}
+	
+	return nullptr;
+}
 

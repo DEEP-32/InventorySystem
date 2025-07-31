@@ -3,8 +3,11 @@
 
 #include "Widgets/Inventory/Spatial/Inv_SpatialInventory.h"
 
+#include "Inventory.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "InventoryManagement/Utils/Inv_InventoryStatics.h"
+#include "Inventory.h"
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
 
 void UInv_SpatialInventory::NativeOnInitialized() {
@@ -17,11 +20,18 @@ void UInv_SpatialInventory::NativeOnInitialized() {
 	ShowEquippable();
 }
 
-FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(const UInv_ItemComponent* ItemComponent) const {
-	FInv_SlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-	
-	return Result;
+FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(UInv_ItemComponent* ItemComponent) const {
+	switch (UInv_InventoryStatics::GetItemCategoryFromItemComp(ItemComponent)) {
+		case EInv_ItemCategory::Consumable:
+			return EquippableGrid->HasRoomForItem(ItemComponent);
+		case EInv_ItemCategory::Craftable:
+			return EquippableGrid->HasRoomForItem(ItemComponent);
+		case EInv_ItemCategory::Equippable:
+			return EquippableGrid->HasRoomForItem(ItemComponent);
+		default:
+			UE_LOG(LogInventory,Error,TEXT("Item component category not supported"))
+			return FInv_SlotAvailabilityResult();
+	}
 }
 
 void UInv_SpatialInventory::ShowEquippable() {

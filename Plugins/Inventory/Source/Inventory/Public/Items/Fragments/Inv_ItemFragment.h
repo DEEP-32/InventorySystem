@@ -72,7 +72,7 @@ public:
 		return Icon;
 	}
 
-	void SetIcon(UTexture2D& NewIcon) {
+	void SetIcon(UTexture2D* NewIcon) {
 		this->Icon = NewIcon;
 	}
 
