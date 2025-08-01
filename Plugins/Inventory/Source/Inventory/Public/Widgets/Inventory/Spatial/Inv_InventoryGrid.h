@@ -46,14 +46,18 @@ private:
 	void AddItemAtIndex(UInv_InventoryItem* Item,const int32 Index,const bool bIsStackable,const int32 StackAmount);
 	
 	
-	UInv_SlottedItems* GetSlottedItem(UInv_InventoryItem* Item,
+	UInv_SlottedItems* CreateSlottedItem(UInv_InventoryItem* Item,
 		const int32 Index,
 		const bool bStackable,
 		const int32 StackAmount,
 		const FInv_GridFragment* GridFragment,
 		const FInv_ImageFragment* ImageFragment
 	) const;
-	FVector2D GetGridSize(const FInv_GridFragment* GridFragment) const;
+
+	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
+	
+	FVector2D GetDrawSize(const FInv_GridFragment* GridFragment) const;
+	FVector2D GetDrawPosition(const int32 Index,const FInv_GridFragment* GridFragment) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
@@ -66,6 +70,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category="Inventory|Grid Settings")
 	TSubclassOf<UInv_SlottedItems> SlottedItemsClass;
+
+	UPROPERTY()
+	TMap<int32,TObjectPtr<UInv_SlottedItems>> SlottedItems;
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UInv_GridSlots>> GridSlots;
