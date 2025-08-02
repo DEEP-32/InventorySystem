@@ -9,6 +9,7 @@
 
 class UInv_InventoryItem;
 class UImage;
+class UTextBlock;
 /**
  * 
  */
@@ -53,9 +54,14 @@ public:
 
 	void SetImageBrush(const FSlateBrush& Brush) const;
 
+	void SetStackCount(int32 NewStackCount);
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ItemImage;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ItemStackCount;
 
 	UPROPERTY()
 	int32 GridIndex;
