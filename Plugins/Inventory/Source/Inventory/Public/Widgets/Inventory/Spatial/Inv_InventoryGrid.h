@@ -62,8 +62,10 @@ private:
 	 *	(Assumes item inventory size to (1,1) if item doesn't have grid fragment)
 	 * @param Item The inventory item to update grid slots for. It is used to determine the grid size and other properties necessary for updating.
 	 * @param Index The index in the grid where the item begins. This serves as the reference point for updating the grid slots occupied by the item.
+	 * @param bStackableItem
+	 * @param StackAmount
 	 */
-	void UpdateGridSlots(UInv_InventoryItem* Item, int32 Index);
+	void UpdateGridSlots(UInv_InventoryItem* Item, int32 Index, bool bStackableItem, int32 StackAmount);
 	FVector2D GetDrawSize(const FInv_GridFragment* GridFragment) const;
 	FVector2D GetDrawPosition(const int32 Index,const FInv_GridFragment* GridFragment) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
