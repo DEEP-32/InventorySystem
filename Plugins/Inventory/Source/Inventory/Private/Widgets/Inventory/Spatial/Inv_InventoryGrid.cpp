@@ -49,13 +49,6 @@ void UInv_InventoryGrid::ConstructGrid() {
 	}
 }
 
-void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
-	if (!MatchesCategory(Item)) return;
-
-	FInv_SlotAvailabilityResult Result = HasRoomForItem(Item);
-
-	AddItemToIndices(Result, Item);
-}
 
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_ItemComponent* Item) {
 	return HasRoomForItem(Item->GetItemManifest());
@@ -83,9 +76,17 @@ bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* Item) const {
 	return Item->GetItemManifest().GetItemCategory() == ItemCategory;
 }
 
+void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
+	if (!MatchesCategory(Item)) return;
+
+	FInv_SlotAvailabilityResult Result = HasRoomForItem(Item);
+
+	AddItemToIndices(Result, Item);
+}
 void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* Item) {
 	for (const FInv_SlotAvailability& Availability : Result.SlotAvailabilities) {
 		AddItemAtIndex(Item, Availability.Index, Result.bStackable, Availability.AmountToFill);
+		UpdateGridSlots(Item, Availability.Index);
 	}
 }
 
@@ -133,6 +134,13 @@ void UInv_InventoryGrid::AddSlottedItemToCanvas(const int32 Index, const FInv_Gr
 	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlottedItem);
 	CanvasSlot->SetSize(GetDrawSize(GridFragment));
 	CanvasSlot->SetPosition(GetDrawPosition(Index,GridFragment));
+}
+
+void UInv_InventoryGrid::UpdateGridSlots(UInv_InventoryItem* Item, const int32 Index) {
+	check(GridSlots.IsValidIndex(Index));
+
+	UInv_GridSlots* GridSlot = GridSlots[Index];
+	GridSlot->SetGridState(EInv_GridSlotState::Occupied);
 }
 
 FVector2D UInv_InventoryGrid::GetDrawSize(const FInv_GridFragment* GridFragment) const {

@@ -4,9 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Widgets/Data/EInv_GridSlotState.h"
 #include "Inv_GridSlots.generated.h"
 
+class UGridSlotStateDataAsset;
 class UImage;
+
+
+
 /**
  * 
  */
@@ -19,8 +24,18 @@ public:
 		return Index;
 	}
 
-	void SetTileIndex(int32 TileIndex) {
+	void SetTileIndex(const int32 TileIndex) {
 		this->Index = TileIndex;
+	}
+
+	EInv_GridSlotState GetGridState() const {
+		return State;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetGridState(const EInv_GridSlotState NewState) {
+		this->State = NewState;
+		PostStateChange();
 	}
 
 private:
@@ -28,4 +43,12 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> GridSlotImage;
+
+	UPROPERTY(EditDefaultsOnly,Category="Inventory|State|Data")
+	TObjectPtr<UGridSlotStateDataAsset> StateDataAsset;
+
+	UPROPERTY(EditAnywhere,Category="Inventory|State")
+	EInv_GridSlotState State;
+
+	void PostStateChange() const;
 };
