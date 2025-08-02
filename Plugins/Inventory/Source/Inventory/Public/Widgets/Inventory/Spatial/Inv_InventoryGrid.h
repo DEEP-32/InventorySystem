@@ -55,6 +55,14 @@ private:
 	) const;
 
 	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
+
+	/**
+	 * Updates the grid slots to reflect the state of a newly added or modified inventory item.
+	 * This method sets the grid state of the slots based on the item's properties and dimensions.
+	 *	(Assumes item inventory size to (1,1) if item doesn't have grid fragment)
+	 * @param Item The inventory item to update grid slots for. It is used to determine the grid size and other properties necessary for updating.
+	 * @param Index The index in the grid where the item begins. This serves as the reference point for updating the grid slots occupied by the item.
+	 */
 	void UpdateGridSlots(UInv_InventoryItem* Item, int32 Index);
 	FVector2D GetDrawSize(const FInv_GridFragment* GridFragment) const;
 	FVector2D GetDrawPosition(const int32 Index,const FInv_GridFragment* GridFragment) const;
