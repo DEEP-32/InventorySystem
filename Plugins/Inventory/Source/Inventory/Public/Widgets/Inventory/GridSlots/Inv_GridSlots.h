@@ -22,7 +22,7 @@ class INVENTORY_API UInv_GridSlots : public UUserWidget {
 
 public:
 
-	bool IsAvailable() {
+	bool IsAvailable() const {
 		return State == EInv_GridSlotState::Unoccupied;
 	}
 	

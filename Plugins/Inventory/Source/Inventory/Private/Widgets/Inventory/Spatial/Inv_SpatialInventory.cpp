@@ -25,9 +25,9 @@ FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(UInv_ItemCompo
 		case EInv_ItemCategory::Consumable:
 			return EquippableGrid->HasRoomForItem(ItemComponent);
 		case EInv_ItemCategory::Craftable:
-			return EquippableGrid->HasRoomForItem(ItemComponent);
+			return CraftableGrid->HasRoomForItem(ItemComponent);
 		case EInv_ItemCategory::Equippable:
-			return EquippableGrid->HasRoomForItem(ItemComponent);
+			return ConsumableGrid->HasRoomForItem(ItemComponent);
 		default:
 			UE_LOG(LogInventory,Error,TEXT("Item component category not supported"))
 			return FInv_SlotAvailabilityResult();
