@@ -60,19 +60,21 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_Invent
 
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& Item) {
 	FInv_SlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-	Result.bStackable = true;
 
-	FInv_SlotAvailability SlotAvailability;
-	SlotAvailability.AmountToFill = 2;
-	SlotAvailability.Index = 0;
-
-	FInv_SlotAvailability SlotAvailability2;
-	SlotAvailability2.AmountToFill = 5;
-	SlotAvailability2.Index = 1;
-
-	Result.SlotAvailabilities.Add(SlotAvailability);
-	Result.SlotAvailabilities.Add(SlotAvailability2);
+	/*TODO:
+	 * 1. Determine if the item is stackable.
+	 * 2. Determine how many stack to add.
+	 * 3. For each grid slots:
+	 *      if we dont have any square to fill , break out of the loop early.
+	 *      is this index claimed yet.
+	 *      Can the item fit here. (i.e. is the item out of grid bounds.)
+	 *      is there any room at this index? (i.e. are there any other items at this index?)
+	 *      check for all the grid slots with in range of item grid size.
+	 *      How much to fill in that particular slot.
+	 *      Update the amount left to fill.
+	 * 4. How much is the remainder.
+	*/
+	
 	
 	return Result;
 }
