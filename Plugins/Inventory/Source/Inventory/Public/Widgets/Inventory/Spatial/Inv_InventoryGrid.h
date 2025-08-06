@@ -43,8 +43,9 @@ private:
 	bool MatchesCategory(const UInv_InventoryItem* Item) const;
 	bool IsIndexClaimed(const TSet<int32>& Indices,const int32 Index) const;
 	bool HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FIntPoint& ItemSize, const TSet<int32>& CheckedIndices, TSet<int32>&
-	                    OutTentativelyClaimed);
-	bool CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices) const;
+	                    OutTentativelyClaimed, const FGameplayTag& ItemType, int32 MaxStackSize);
+	bool CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices, const
+	                          FGameplayTag& ItemType, int32 MAxStackSize) const;
 	bool HasValidItem(const UInv_GridSlots* GridSlot) const;
 	bool IsOriginalGridSlot(const UInv_GridSlots* GridSlot,const UInv_GridSlots* SubGridSlot) const;
 	FIntPoint TryGetItemSize(const FInv_ItemManifest& ItemManifest,const FIntPoint& DefaultSize) const;

@@ -89,7 +89,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 		if (IsIndexClaimed(CheckedIndices,GridSlot->GetIndex())) continue;
 		const FIntPoint ItemSize = TryGetItemSize(ItemManifest, FIntPoint(1, 1));
 		TSet<int32> TentativelyClaimed;
-		if (!HasRoomAtIndex(GridSlot,ItemSize, CheckedIndices, TentativelyClaimed)) {
+		if (!HasRoomAtIndex(GridSlot,ItemSize, CheckedIndices, TentativelyClaimed, ItemManifest.GetItemType(), MaxStackSize)) {
 			continue;
 		}
 
@@ -110,7 +110,8 @@ bool UInv_InventoryGrid::IsIndexClaimed(const TSet<int32>& Indices, const int32 
 }
 
 bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FIntPoint& ItemSize,
-                                        const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) {
+                                        const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed, const FGameplayTag& ItemType, const int32
+                                        MaxStackSize) {
 	
 	bool bHasRoomAtIndex = true;
 
@@ -120,7 +121,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FI
 		ItemSize,
 		Columns,
 		[&](const UInv_GridSlots* SubGridSlot) {
-			if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices))  { // check slot contraints
+			if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices, ItemType, MaxStackSize))  { // check slot contraints
 				OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 			}
 			else {
@@ -133,7 +134,8 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FI
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices) const {
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices, const
+                                              FGameplayTag& ItemType, const int32 MAxStackSize) const {
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
 
 	if (!HasValidItem(SubGridSlot)) return true;
@@ -142,7 +144,12 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, co
 
 	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
 	if (!SubItem->IsStackable()) return false;
-	return false;
+
+	if (SubItem->IsSameItemType(ItemType)) return false;
+
+	if (GridSlot->GetStackCount() >= MAxStackSize) return false;
+	
+	return true;
 }
 
 bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlots* GridSlot) const {

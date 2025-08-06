@@ -27,6 +27,10 @@ public:
 		return ItemManifest.GetMutable<FInv_ItemManifest>();
 	}
 
+	FORCEINLINE bool IsSameItemType(const FGameplayTag& Tag) const {
+		return GetItemManifest().GetItemType().MatchesTagExact(Tag);
+	}
+
 	bool IsStackable() const;
 
 	void SetItemManifest(const FInv_ItemManifest& NewManifest);
