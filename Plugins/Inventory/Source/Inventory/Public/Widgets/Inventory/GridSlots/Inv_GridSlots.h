@@ -48,9 +48,9 @@ public:
 	int32 GetStackCount() const { return StackCount; }
 	int32 GetOriginSlotIndex() const { return OriginSlotIndex; }
 
-	void SetIndex(const int32 Index) { this->Index = Index; }
-	void SetStackCount(const int32 StackCount) { this->StackCount = StackCount; }
-	void SetOriginSlotIndex(const int32 OriginSlotIndex) { this->OriginSlotIndex = OriginSlotIndex; }
+	void SetIndex(const int32 NewIndex) { this->Index = NewIndex; }
+	void SetStackCount(const int32 NewStackCount) { this->StackCount = NewStackCount; }
+	void SetOriginSlotIndex(const int32 NewOriginSlotIndex) { this->OriginSlotIndex = NewOriginSlotIndex; }
 	
 	UFUNCTION(BlueprintCallable)
 	void SetGridState(const EInv_GridSlotState NewState) {

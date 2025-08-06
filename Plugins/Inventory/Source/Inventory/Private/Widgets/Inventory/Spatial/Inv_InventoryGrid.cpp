@@ -58,7 +58,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_Invent
 	return HasRoomForItem(Item->GetItemManifest());
 }
 
-FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& Item) {
+FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& ItemManifest) {
 	FInv_SlotAvailabilityResult Result;
 
 	/*TODO:
@@ -74,6 +74,28 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 	 *      Update the amount left to fill.
 	 * 4. How much is the remainder.
 	*/
+
+	const FInv_StackableFragment* StackableFragment = ItemManifest.GetFragmentOfType<FInv_StackableFragment>();
+	Result.bStackable = StackableFragment != nullptr;
+
+	const int32 MaxStackSize = Result.bStackable ? StackableFragment->GetMaxStackSize() : 1;
+	int32 AmountToFill = Result.bStackable ? StackableFragment->GetStackCount() : 1;
+
+	TSet<int32> CheckedIndices;
+
+	for (const auto& GridSlot : GridSlots) {
+		if (AmountToFill == 0) break;
+
+		if (IsIndexClaimed(CheckedIndices,GridSlot->GetIndex())) continue;
+		const FIntPoint ItemSize = TryGetItemSize(ItemManifest, FIntPoint(1, 1));
+		TSet<int32> TentativelyClaimed;
+		if (!HasRoomAtIndex(GridSlot,ItemSize, CheckedIndices, TentativelyClaimed)) {
+			continue;
+		}
+
+		CheckedIndices.Append(TentativelyClaimed);
+		
+	}
 	
 	
 	return Result;
@@ -82,6 +104,44 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* Item) const {
 	return Item->GetItemManifest().GetItemCategory() == ItemCategory;
 }
+
+bool UInv_InventoryGrid::IsIndexClaimed(const TSet<int32>& Indices, const int32 Index) const {
+	return Indices.Contains(Index);
+}
+
+bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FIntPoint& ItemSize,
+                                        const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) {
+	
+	bool bHasRoomAtIndex = true;
+
+	UInv_InventoryStatics::ForEach2D(
+		GridSlots,
+		GridSlot->GetIndex(),
+		ItemSize,
+		Columns,
+		[&](const UInv_GridSlots* SubGridSlot) {
+			if (CheckSlotConstraints(SubGridSlot))  { // check slot contraints
+				OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
+			}
+			else {
+				bHasRoomAtIndex = false;
+			}
+				
+		}
+	);
+	
+	return bHasRoomAtIndex;
+}
+
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* SubGridSlot) const {
+	return false;
+}
+
+FIntPoint UInv_InventoryGrid::TryGetItemSize(const FInv_ItemManifest& ItemManifest, const FIntPoint& DefaultSize) const {
+	const FInv_GridFragment* GridFragment = ItemManifest.GetFragmentOfType<FInv_GridFragment>();
+	return GridFragment ? GridFragment->GetGridSize() : DefaultSize;
+}
+
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
 	if (!MatchesCategory(Item)) return;

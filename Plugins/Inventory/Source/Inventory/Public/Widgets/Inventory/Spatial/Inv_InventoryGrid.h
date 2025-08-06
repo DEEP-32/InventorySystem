@@ -39,8 +39,13 @@ public:
 private:
 	void ConstructGrid();
 	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* Item);
-	FInv_SlotAvailabilityResult HasRoomForItem(const FInv_ItemManifest& Item);
+	FInv_SlotAvailabilityResult HasRoomForItem(const FInv_ItemManifest& ItemManifest);
 	bool MatchesCategory(const UInv_InventoryItem* Item) const;
+	bool IsIndexClaimed(const TSet<int32>& Indices,const int32 Index) const;
+	bool HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FIntPoint& ItemSize, const TSet<int32>& CheckedIndices, TSet<int32>&
+	                    OutTentativelyClaimed);
+	bool CheckSlotConstraints(const UInv_GridSlots* SubGridSlot) const;
+	FIntPoint TryGetItemSize(const FInv_ItemManifest& ItemManifest,const FIntPoint& DefaultSize) const;
 
 	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result,UInv_InventoryItem* Item);
 	void AddItemAtIndex(UInv_InventoryItem* Item,const int32 Index,const bool bIsStackable,const int32 StackAmount);
