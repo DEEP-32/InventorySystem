@@ -48,6 +48,7 @@ private:
 	                          FGameplayTag& ItemType, int32 MAxStackSize) const;
 	bool HasValidItem(const UInv_GridSlots* GridSlot) const;
 	bool IsOriginalGridSlot(const UInv_GridSlots* GridSlot,const UInv_GridSlots* SubGridSlot) const;
+	bool IsInGridBounds(const int32 StartIndex,const FIntPoint& ItemDimensions) const;
 	FIntPoint TryGetItemSize(const FInv_ItemManifest& ItemManifest,const FIntPoint& DefaultSize) const;
 
 	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result,UInv_InventoryItem* Item);

@@ -87,7 +87,11 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 		if (AmountToFill == 0) break;
 
 		if (IsIndexClaimed(CheckedIndices,GridSlot->GetIndex())) continue;
+
 		const FIntPoint ItemSize = TryGetItemSize(ItemManifest, FIntPoint(1, 1));
+
+		if (!IsInGridBounds(GridSlot->GetIndex(),ItemSize )) continue;
+
 		TSet<int32> TentativelyClaimed;
 		if (!HasRoomAtIndex(GridSlot,ItemSize, CheckedIndices, TentativelyClaimed, ItemManifest.GetItemType(), MaxStackSize)) {
 			continue;
@@ -158,6 +162,15 @@ bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlots* GridSlot) const {
 
 bool UInv_InventoryGrid::IsOriginalGridSlot(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot) const {
 	return GridSlot->GetIndex() == SubGridSlot->GetIndex();
+}
+
+bool UInv_InventoryGrid::IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimensions) const {
+	if (StartIndex < 0 || StartIndex >= GridSlots.Num() ) return false;
+
+	const int32 EndColumn = (StartIndex % Columns) + ItemDimensions.X;
+	const int32 EndRow = (StartIndex / Columns) + ItemDimensions.Y;
+
+	return EndColumn <= Columns && EndRow <= Rows;
 }
 
 FIntPoint UInv_InventoryGrid::TryGetItemSize(const FInv_ItemManifest& ItemManifest, const FIntPoint& DefaultSize) const {
