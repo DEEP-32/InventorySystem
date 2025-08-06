@@ -22,16 +22,15 @@ class INVENTORY_API UInv_GridSlots : public UUserWidget {
 
 public:
 
-	bool IsAvailable() const {
-		return State == EInv_GridSlotState::Unoccupied;
+	bool IsTheOriginalSlot() const {
+		if (OriginSlotIndex == -1) {
+			return true;
+		}
+		return OriginSlotIndex == Index;
 	}
 	
-	int32 GetTileIndex() const {
-		return Index;
-	}
-
-	void SetTileIndex(const int32 TileIndex) {
-		this->Index = TileIndex;
+	bool IsAvailable() const {
+		return State == EInv_GridSlotState::Unoccupied;
 	}
 
 	EInv_GridSlotState GetGridState() const {

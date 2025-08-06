@@ -49,8 +49,11 @@ private:
 	bool HasValidItem(const UInv_GridSlots* GridSlot) const;
 	bool IsOriginalGridSlot(const UInv_GridSlots* GridSlot,const UInv_GridSlots* SubGridSlot) const;
 	bool IsInGridBounds(const int32 StartIndex,const FIntPoint& ItemDimensions) const;
-	FIntPoint TryGetItemSize(const FInv_ItemManifest& ItemManifest,const FIntPoint& DefaultSize) const;
 
+	FIntPoint TryGetItemSize(const FInv_ItemManifest& ItemManifest,const FIntPoint& DefaultSize) const;
+	int32 DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize, const int32 TotalAmountToFill, const UInv_GridSlots* GridSlot) const;
+	int32 GetStackAmount(const UInv_GridSlots* GridSlot) const;
+	
 	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result,UInv_InventoryItem* Item);
 	void AddItemAtIndex(UInv_InventoryItem* Item,const int32 Index,const bool bIsStackable,const int32 StackAmount);
 	

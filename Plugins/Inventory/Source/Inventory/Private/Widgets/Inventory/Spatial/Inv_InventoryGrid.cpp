@@ -38,7 +38,7 @@ void UInv_InventoryGrid::ConstructGrid() {
 			CanvasPanel->AddChild(GridSlot);
 			const FIntPoint TilePosition(j, i);
 			const int32 Index = UInv_WidgetUtils::GetIndexFromPosition(TilePosition, Columns);
-			GridSlot->SetTileIndex(Index);
+			GridSlot->SetIndex(Index);
 
 			UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(GridSlot);
 			CanvasSlot->SetSize(FVector2D(TileSize));
@@ -97,7 +97,32 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 			continue;
 		}
 
+		const int32 AmountToFillForSlot = DetermineFillAmountForSlot(
+			Result.bStackable,
+			MaxStackSize,
+			AmountToFill,
+			GridSlot
+		);
+		if (AmountToFillForSlot == 0) continue;
+
+		
 		CheckedIndices.Append(TentativelyClaimed);
+
+		Result.TotalRoomToFill += AmountToFillForSlot;
+		Result.SlotAvailabilities.Emplace(
+			FInv_SlotAvailability{
+				HasValidItem(GridSlot) ? GridSlot->GetOriginSlotIndex() : GridSlot->GetIndex(),
+				Result.bStackable ? AmountToFillForSlot : 0,
+				HasValidItem(GridSlot)
+			}
+		);
+
+		AmountToFill -= AmountToFillForSlot;
+		Result.Remainder = AmountToFill;
+
+		if (AmountToFill == 0) return Result;
+
+		
 		
 	}
 	
@@ -176,6 +201,28 @@ bool UInv_InventoryGrid::IsInGridBounds(const int32 StartIndex, const FIntPoint&
 FIntPoint UInv_InventoryGrid::TryGetItemSize(const FInv_ItemManifest& ItemManifest, const FIntPoint& DefaultSize) const {
 	const FInv_GridFragment* GridFragment = ItemManifest.GetFragmentOfType<FInv_GridFragment>();
 	return GridFragment ? GridFragment->GetGridSize() : DefaultSize;
+}
+
+int32 UInv_InventoryGrid::DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize,
+                                                     const int32 TotalAmountToFill, const UInv_GridSlots* GridSlot) const {
+
+	//calculate room in the slot.
+	const int32 RoomInSlot = MaxStackSize - GetStackAmount(GridSlot);
+	return bStackable ? FMath::Min(RoomInSlot, TotalAmountToFill) : 1;
+	// if stackable, need the minimum between AmountToFill and RoomInSlot.
+}
+
+int32 UInv_InventoryGrid::GetStackAmount(const UInv_GridSlots* GridSlot) const {
+
+	const UInv_GridSlots* OriginalGridSlot = nullptr;
+	
+	if (GridSlot->IsTheOriginalSlot()) {
+		OriginalGridSlot = GridSlot;
+	}else {
+		OriginalGridSlot = GridSlots[GridSlot->GetOriginSlotIndex()];
+	}
+
+	return OriginalGridSlot->GetStackCount();
 }
 
 
