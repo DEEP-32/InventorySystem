@@ -27,6 +27,8 @@ public:
 		return ItemManifest.GetMutable<FInv_ItemManifest>();
 	}
 
+	bool IsStackable() const;
+
 	void SetItemManifest(const FInv_ItemManifest& NewManifest);
 	
 private:

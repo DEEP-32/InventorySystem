@@ -120,7 +120,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FI
 		ItemSize,
 		Columns,
 		[&](const UInv_GridSlots* SubGridSlot) {
-			if (CheckSlotConstraints(SubGridSlot))  { // check slot contraints
+			if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices))  { // check slot contraints
 				OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 			}
 			else {
@@ -133,8 +133,24 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FI
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* SubGridSlot) const {
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices) const {
+	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
+
+	if (!HasValidItem(SubGridSlot)) return true;
+
+	if (!IsOriginalGridSlot(GridSlot, SubGridSlot)) return false;
+
+	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
+	if (!SubItem->IsStackable()) return false;
 	return false;
+}
+
+bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlots* GridSlot) const {
+	return GridSlot->GetInventoryItem().IsValid();
+}
+
+bool UInv_InventoryGrid::IsOriginalGridSlot(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot) const {
+	return GridSlot->GetIndex() == SubGridSlot->GetIndex();
 }
 
 FIntPoint UInv_InventoryGrid::TryGetItemSize(const FInv_ItemManifest& ItemManifest, const FIntPoint& DefaultSize) const {
