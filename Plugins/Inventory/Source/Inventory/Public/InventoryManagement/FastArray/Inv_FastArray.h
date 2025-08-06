@@ -50,6 +50,8 @@ struct FInv_InventoryFastArray : public FFastArraySerializer {
 
 	void RemovedEntry(UInv_InventoryItem* Item);
 
+	UInv_InventoryItem* FindFirstItemByType(const FGameplayTag& ItemType) const;
+
 	//FFastArraySerializer end contract
 
 private:

@@ -75,3 +75,13 @@ void FInv_InventoryFastArray::RemovedEntry(UInv_InventoryItem* Item) {
 		}
 	}
 }
+
+UInv_InventoryItem* FInv_InventoryFastArray::FindFirstItemByType(const FGameplayTag& ItemType) const {
+	auto* FoundItem = ItemEntries.FindByPredicate(
+		[ItemType](const FInv_InventoryEntry& Entry) {
+			return IsValid(Entry.Item) && Entry.Item->IsSameItemType(ItemType);
+		}
+	);
+
+	return FoundItem ? FoundItem->Item : nullptr;
+}
