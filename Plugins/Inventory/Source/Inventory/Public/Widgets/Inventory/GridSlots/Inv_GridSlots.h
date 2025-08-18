@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Inventory.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/Data/EInv_GridSlotState.h"
 #include "Inv_GridSlots.generated.h"
@@ -22,6 +23,21 @@ class INVENTORY_API UInv_GridSlots : public UUserWidget {
 
 public:
 
+	FString GetStateString() const {
+		switch (GetGridState()) {
+			case EInv_GridSlotState::Unoccupied:
+				return TEXT("Unoccupied");
+			case EInv_GridSlotState::Occupied:
+				return TEXT("Occupied");
+			case EInv_GridSlotState::Selected:
+				return TEXT("Selected");
+			case EInv_GridSlotState::GreyedOut:
+				return TEXT("GreyedOut");
+		}
+
+		return TEXT("Unknown");
+	}
+	
 	bool IsTheOriginalSlot() const {
 		if (OriginSlotIndex == -1) {
 			return true;
@@ -49,7 +65,10 @@ public:
 
 	void SetIndex(const int32 NewIndex) { this->Index = NewIndex; }
 	void SetStackCount(const int32 NewStackCount) { this->StackCount = NewStackCount; }
-	void SetOriginSlotIndex(const int32 NewOriginSlotIndex) { this->OriginSlotIndex = NewOriginSlotIndex; }
+	void SetOriginSlotIndex(const int32 NewOriginSlotIndex) {
+		UE_LOG(LogInventory,Warning,TEXT("setting origin slot index to %d for grid slot at index : %d"),NewOriginSlotIndex,GetIndex());
+		this->OriginSlotIndex = NewOriginSlotIndex;
+	}
 	
 	UFUNCTION(BlueprintCallable)
 	void SetGridState(const EInv_GridSlotState NewState) {
@@ -61,6 +80,8 @@ private:
 	int32 Index;
 	int32 StackCount;
 	int32 OriginSlotIndex = -1;
+
+	UPROPERTY()
 	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
 
 	UPROPERTY(meta = (BindWidget))

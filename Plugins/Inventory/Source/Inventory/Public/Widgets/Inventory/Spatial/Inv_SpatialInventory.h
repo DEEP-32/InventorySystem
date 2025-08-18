@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/Base/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+enum class EInv_ItemCategory : uint8;
 class UButton;
 class UWidgetSwitcher;
 class UInv_InventoryGrid;
@@ -16,6 +17,10 @@ UCLASS()
 class INVENTORY_API UInv_SpatialInventory : public UInv_InventoryBase {
 	GENERATED_BODY()
 
+public:
+	UInv_InventoryGrid* GetInventoryGrid(EInv_ItemCategory Category);
+	
+	
 public:
 	virtual void NativeOnInitialized() override;
 

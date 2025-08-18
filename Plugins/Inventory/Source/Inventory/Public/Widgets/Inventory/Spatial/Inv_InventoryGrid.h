@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Items/Fragments/Inv_ItemFragment.h"
+#include "Types/EnumTypes.h"
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+enum class EInv_ItemCategory : uint8;
 struct FInv_GridFragment;
 class UInv_SlottedItems;
 struct FInv_ItemManifest;
@@ -23,8 +25,26 @@ class INVENTORY_API UInv_InventoryGrid : public UUserWidget {
 	GENERATED_BODY()
 
 public:
+
+	FString GetCategoryString() const {
+		switch (ItemCategory) {
+			case EInv_ItemCategory::Consumable:
+				return TEXT("Consumable");
+			case EInv_ItemCategory::Craftable:
+				return TEXT("Craftable");
+			case EInv_ItemCategory::Equippable:
+				return TEXT("Equippable");
+			case EInv_ItemCategory::None:
+				return TEXT("None"); 
+		}
+
+		return TEXT("Unknown");
+	}
+	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EInv_ItemCategory GetItemCategory() const {return ItemCategory;}
+
+	void LogGridSlotsInfo(FString CalledFrom) const;
 	
 public:
 	virtual void NativeOnInitialized() override;
@@ -45,7 +65,7 @@ private:
 	bool HasRoomAtIndex(const UInv_GridSlots* GridSlot, const FIntPoint& ItemSize, const TSet<int32>& CheckedIndices, TSet<int32>&
 	                    OutTentativelyClaimed, const FGameplayTag& ItemType, int32 MaxStackSize);
 	bool CheckSlotConstraints(const UInv_GridSlots* GridSlot, const UInv_GridSlots* SubGridSlot, const TSet<int32>& CheckedIndices, const
-	                          FGameplayTag& ItemType, int32 MAxStackSize) const;
+	                          FGameplayTag& ItemType, int32 MaxStackSize) const;
 	bool HasValidItem(const UInv_GridSlots* GridSlot) const;
 	bool IsOriginalGridSlot(const UInv_GridSlots* GridSlot,const UInv_GridSlots* SubGridSlot) const;
 	bool IsInGridBounds(const int32 StartIndex,const FIntPoint& ItemDimensions) const;

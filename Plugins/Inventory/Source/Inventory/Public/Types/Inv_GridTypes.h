@@ -4,14 +4,6 @@
 
 class UInv_InventoryItem;
 
-UENUM(BlueprintType)
-enum class EInv_ItemCategory : uint8 {
-	Equippable,
-	Consumable,
-	Craftable,
-	None
-};
-
 USTRUCT()
 struct FInv_SlotAvailability {
 	GENERATED_BODY()
@@ -26,6 +18,13 @@ struct FInv_SlotAvailability {
 	int32 Index = -1;
 	int32 AmountToFill = 0;
 	bool bItemAtIndex = false;
+
+	FString ToString() const {
+		return FString::Printf(
+			TEXT("{Index=%d, AmountToFill=%d, bItemAtIndex=%s}"),
+			Index, AmountToFill, bItemAtIndex ? TEXT("true") : TEXT("false"));
+	}
+	
 };
 
 USTRUCT()
@@ -39,4 +38,21 @@ struct FInv_SlotAvailabilityResult {
 	int32 Remainder = 0;
 	bool bStackable = false;
 	TArray<FInv_SlotAvailability> SlotAvailabilities;
+
+	FString ToString() const
+	{
+		FString SlotsStr;
+		for (int32 i = 0; i < SlotAvailabilities.Num(); ++i)
+		{
+			SlotsStr += FString::Printf(TEXT("\n  [%d]: %s"), i, *SlotAvailabilities[i].ToString());
+		}
+
+		return FString::Printf(
+			TEXT("Item= %s, TotalRoomToFill=%d, Remainder=%d, bStackable=%s, SlotAvailabilities=[%s]\n"),
+			Item.IsValid() ? TEXT("Have item") : TEXT("None"),
+			TotalRoomToFill,
+			Remainder,
+			bStackable ? TEXT("true") : TEXT("false"),
+			*SlotsStr);
+	}
 };

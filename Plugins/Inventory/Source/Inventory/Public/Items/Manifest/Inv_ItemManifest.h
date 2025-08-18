@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Types/Inv_GridTypes.h"
 #include "StructUtils/InstancedStruct.h"
 #include "GameplayTagContainer.h"
+#include "Types/EnumTypes.h"
 #include "Inv_ItemManifest.generated.h"
 
 struct FInv_ItemFragment;
@@ -35,9 +35,10 @@ private:
 	UPROPERTY(EditAnywhere,Category="Inventory",meta = (ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInv_ItemFragment>> Fragments;
 	
+
 	UPROPERTY(EditAnywhere,Category="Inventory")
 	EInv_ItemCategory ItemCategory = EInv_ItemCategory::None;
-
+	
 	UPROPERTY(EditAnywhere,Category="Inventory")
 	FGameplayTag ItemType;
 	

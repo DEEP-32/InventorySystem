@@ -3,12 +3,16 @@
 
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
 
+#include "Inventory.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "InventoryManagement/Utils/Inv_InventoryStatics.h"
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/Inventory/Base/Inv_InventoryBase.h"
 #include "Items/Inv_InventoryItem.h"
+#include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
+#include "Widgets/Inventory/Spatial/Inv_SpatialInventory.h"
 
 
 UInv_InventoryComponent::UInv_InventoryComponent() : InventoryList( this ) {
@@ -24,19 +28,26 @@ void UInv_InventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 
 
 void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
+	const EInv_ItemCategory Category = UInv_InventoryStatics::GetItemCategoryFromItemComp(ItemComponent);
+	
 	FInv_SlotAvailabilityResult Result = InventoryMenu->HasRoomForItem(ItemComponent);
 
 	UInv_InventoryItem* FoundItem = InventoryList.FindFirstItemByType(ItemComponent->GetItemManifest().GetItemType());
 	Result.Item = FoundItem;
 
+	
 	if (Result.TotalRoomToFill == 0) {
+		UE_LOG(LogInventory,Warning,TEXT("Player controller : No room in inventory"));
 		OnNoRoomInInventory.Broadcast();
+		return;
 	}
 
 	if (Result.Item.IsValid() && Result.bStackable) {
+		UE_LOG(LogInventory,Warning,TEXT("Player controller : Stacking item"));
 		Server_AddStackItem(ItemComponent,Result.TotalRoomToFill, Result.Remainder);
 	}
 	else if (Result.TotalRoomToFill > 0) {
+		UE_LOG(LogInventory,Warning,TEXT("Player controller : adding new item"));
 		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0);
 	}
 
@@ -47,8 +58,10 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 	UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
 
 	if (GetOwner()->GetNetMode() == NM_Standalone || GetOwner()->GetNetMode() == NM_ListenServer){
+		UE_LOG(LogInventory,Warning,TEXT("Player controller : broadcasting On item added if we are the server or standalone build"));
 		OnItemAdded.Broadcast(NewItem);
 	}
+	
 	//TODO : Tell item component to destroy its owning actor
 }
 

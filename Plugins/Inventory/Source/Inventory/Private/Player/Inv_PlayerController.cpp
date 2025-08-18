@@ -123,7 +123,7 @@ void AInv_PlayerController::TraceForItem() {
 	}
 
 	if (ThisActor.IsValid()) {
-		UE_LOG(LogInventory, Warning, TEXT("Started tracing a new actor: %s"), *ThisActor->GetName());
+		//UE_LOG(LogInventory, Warning, TEXT("Started tracing a new actor: %s"), *ThisActor->GetName());
 
 
 		if (UActorComponent* Highlightable = ThisActor->FindComponentByInterface(UInv_Highlightable::StaticClass());

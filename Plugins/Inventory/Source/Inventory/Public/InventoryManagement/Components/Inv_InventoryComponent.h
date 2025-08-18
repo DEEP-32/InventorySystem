@@ -9,10 +9,10 @@
 
 
 class UInv_ItemComponent;
+class UInv_InventoryBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChanged, UInv_InventoryItem*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoRoomInInventory);
 
-class UInv_InventoryBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent),Blueprintable)
 class INVENTORY_API UInv_InventoryComponent : public UActorComponent {
