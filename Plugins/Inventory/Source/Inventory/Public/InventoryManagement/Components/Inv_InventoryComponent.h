@@ -32,10 +32,10 @@ public:
 	FNoRoomInInventory OnNoRoomInInventory;
 
 	UFUNCTION(Server,Reliable,Category="Inventory")
-	void Server_AddNewItem(UInv_ItemComponent* ItemComponent,int32 ItemCount);
+	void Server_AddNewItem(UInv_ItemComponent* ItemComponent,int32 StackCount);
 
 	UFUNCTION(Server,Reliable,Category="Inventory")
-	void Server_AddStackItem(UInv_ItemComponent* ItemComponent,int32 ItemCount,int32 Remainder);
+	void Server_AddStackItem(UInv_ItemComponent* ItemComponent,int32 StackCount,int32 Remainder);
 
 protected:
 	virtual void BeginPlay() override;

@@ -7,9 +7,10 @@
 #include "Net/UnrealNetwork.h"
 
 void UInv_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps( OutLifetimeProps );
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME( ThisClass,ItemManifest );
+	DOREPLIFETIME(ThisClass, ItemManifest);
+	DOREPLIFETIME(ThisClass, TotalStackCount);
 }
 
 bool UInv_InventoryItem::IsSupportedForNetworking() const {

@@ -54,9 +54,9 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
 	//TODO : Actually add the item to the inventory
 }
 
-void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 ItemCount) {
+void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount) {
 	UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
-
+	NewItem->SetTotalStackCount(StackCount);
 	if (GetOwner()->GetNetMode() == NM_Standalone || GetOwner()->GetNetMode() == NM_ListenServer){
 		UE_LOG(LogInventory,Warning,TEXT("Player controller : broadcasting On item added if we are the server or standalone build"));
 		OnItemAdded.Broadcast(NewItem);
@@ -65,11 +65,18 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 	//TODO : Tell item component to destroy its owning actor
 }
 
-void UInv_InventoryComponent::Server_AddStackItem_Implementation(UInv_ItemComponent* ItemComponent, int32 ItemCount,
+void UInv_InventoryComponent::Server_AddStackItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount,
 	int32 Remainder) {
 
+	const FGameplayTag& ItemType = IsValid(ItemComponent) ?  ItemComponent->GetItemManifest().GetItemType() : FGameplayTag::EmptyTag;
+	UInv_InventoryItem* FoundItem = InventoryList.FindFirstItemByType(ItemType);
 
+	if (IsValid(FoundItem)) return;
 
+	FoundItem->SetTotalStackCount(FoundItem->GetTotalStackCount() + StackCount);
+
+	//TODO : destroy the item if the remainder is zero
+	// Update the stack count for the item pick up otherwise.
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu() {
