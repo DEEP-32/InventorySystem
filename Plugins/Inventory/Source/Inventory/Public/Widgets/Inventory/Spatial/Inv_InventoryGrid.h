@@ -101,6 +101,9 @@ private:
 	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
 
+	UFUNCTION()
+	void AddStacks(const FInv_SlotAvailabilityResult& Result);
+	
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	
 	UPROPERTY(EditAnywhere,Category="Inventory")

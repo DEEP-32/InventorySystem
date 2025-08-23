@@ -63,6 +63,8 @@ void UInv_InventoryGrid::NativeOnInitialized() {
 		this,
 		&ThisClass::AddItem
 	);
+
+	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
 }
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
@@ -223,9 +225,15 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, co
 	}
 
 	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
-	if (!SubItem->IsStackable()) return false;
+	if (!SubItem->IsStackable()) {
+		UE_LOG(LogInventory, Warning, TEXT("Checking slot constraints : Item is not stackable"));
+		return false;
+	}
 
-	if (SubItem->IsSameItemType(ItemType)) return false;
+	if (!SubItem->IsSameItemType(ItemType)) {
+		UE_LOG(LogInventory, Warning, TEXT("Checking slot constraints : Item is not stackable"));
+		return false;
+	}
 
 	if (GridSlot->GetStackCount() >= MaxStackSize) return false;
 
@@ -377,4 +385,32 @@ void UInv_InventoryGrid::SetSlottedItemImage(const UInv_SlottedItems* SlottedIte
 	Brush.DrawAs = ESlateBrushDrawType::Image;
 	Brush.ImageSize = GetDrawSize(GridFragment);
 	SlottedItem->SetImageBrush(Brush);
+}
+
+void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
+	if (!MatchesCategory(Result.Item.Get())) return;
+
+	for (const FInv_SlotAvailability& SlotAvailability : Result.SlotAvailabilities) {
+		if (SlotAvailability.bItemAtIndex) {
+			const auto& GridSlot = GridSlots[SlotAvailability.Index];
+			const auto& SlottedItem = SlottedItems.FindChecked(SlotAvailability.Index);
+			SlottedItem->SetStackCount(GridSlot->GetStackCount() + SlotAvailability.AmountToFill);
+			GridSlot->SetStackCount(GridSlot->GetStackCount() + SlotAvailability.AmountToFill);
+		}
+		else {
+			AddItemAtIndex(
+				Result.Item.Get(),
+				SlotAvailability.Index,
+				Result.bStackable,
+				SlotAvailability.AmountToFill
+			);
+
+			UpdateGridSlots(
+				Result.Item.Get(),
+				SlotAvailability.Index,
+				Result.bStackable,
+				SlotAvailability.AmountToFill
+			);
+		}
+	}
 }

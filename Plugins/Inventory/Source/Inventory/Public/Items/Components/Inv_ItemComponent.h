@@ -19,12 +19,18 @@ class INVENTORY_API UInv_ItemComponent : public UActorComponent {
 public:
 	FORCEINLINE FString GetPickedUpMessage() const {return PickedUpMessage;}
 	FORCEINLINE FInv_ItemManifest GetItemManifest() const {return ItemManifest;}
+
+	void Pickup();
 	
 public:
 	UInv_ItemComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+protected:
 
+	UFUNCTION(BlueprintImplementableEvent, Category="Pickup")
+	void OnPickedUp();
+	
 private:
 
 	UPROPERTY(Replicated,EditAnywhere,Category="Inventory")

@@ -8,10 +8,12 @@
 #include "Inv_InventoryComponent.generated.h"
 
 
+struct FInv_SlotAvailabilityResult;
 class UInv_ItemComponent;
 class UInv_InventoryBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChanged, UInv_InventoryItem*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoRoomInInventory);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FInv_SlotAvailabilityResult&, Result);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent),Blueprintable)
@@ -30,6 +32,7 @@ public:
 	FInventoryItemChanged OnItemAdded;
 	FInventoryItemChanged OnItemRemoved;
 	FNoRoomInInventory OnNoRoomInInventory;
+	FStackChange OnStackChange;
 
 	UFUNCTION(Server,Reliable,Category="Inventory")
 	void Server_AddNewItem(UInv_ItemComponent* ItemComponent,int32 StackCount);

@@ -43,11 +43,10 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent) {
 	}
 
 	if (Result.Item.IsValid() && Result.bStackable) {
-		UE_LOG(LogInventory,Warning,TEXT("Player controller : Stacking item"));
+		OnStackChange.Broadcast(Result);
 		Server_AddStackItem(ItemComponent,Result.TotalRoomToFill, Result.Remainder);
 	}
 	else if (Result.TotalRoomToFill > 0) {
-		UE_LOG(LogInventory,Warning,TEXT("Player controller : adding new item"));
 		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0);
 	}
 
@@ -62,7 +61,7 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 		OnItemAdded.Broadcast(NewItem);
 	}
 	
-	//TODO : Tell item component to destroy its owning actor
+	ItemComponent->Pickup();
 }
 
 void UInv_InventoryComponent::Server_AddStackItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount,
@@ -71,10 +70,19 @@ void UInv_InventoryComponent::Server_AddStackItem_Implementation(UInv_ItemCompon
 	const FGameplayTag& ItemType = IsValid(ItemComponent) ?  ItemComponent->GetItemManifest().GetItemType() : FGameplayTag::EmptyTag;
 	UInv_InventoryItem* FoundItem = InventoryList.FindFirstItemByType(ItemType);
 
-	if (IsValid(FoundItem)) return;
+	if (!IsValid(FoundItem)) return;
 
 	FoundItem->SetTotalStackCount(FoundItem->GetTotalStackCount() + StackCount);
 
+	if (Remainder == 0) {
+		ItemComponent->Pickup();
+	}
+
+	else if (FInv_StackableFragment* Stackable = ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FInv_StackableFragment>()) {
+		Stackable->SetStackCount(Remainder);
+	}
+	
+	
 	//TODO : destroy the item if the remainder is zero
 	// Update the stack count for the item pick up otherwise.
 }
