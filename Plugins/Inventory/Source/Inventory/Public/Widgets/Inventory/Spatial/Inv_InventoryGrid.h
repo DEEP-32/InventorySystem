@@ -9,6 +9,7 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+class UInv_HoverItem;
 enum class EInv_ItemCategory : uint8;
 struct FInv_GridFragment;
 class UInv_SlottedItems;
@@ -58,6 +59,8 @@ public:
 
 private:
 	void ConstructGrid();
+
+	//Index searching algorithm
 	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* Item);
 	FInv_SlotAvailabilityResult HasRoomForItem(const FInv_ItemManifest& ItemManifest);
 	bool MatchesCategory(const UInv_InventoryItem* Item) const;
@@ -100,9 +103,16 @@ private:
 
 	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
+	//End index searching algorithm
 
+	bool IsRightClick(const FPointerEvent& MouseEvent) const;
+	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
+	
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
+
+	UFUNCTION()
+	void OnSlottedItemClicked(int32 Index,const FPointerEvent& MouseEvent);
 	
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	
@@ -123,7 +133,7 @@ private:
 	
 	UPROPERTY(EditAnywhere,Category="Inventory|Grid Settings")
 	TSubclassOf<UInv_GridSlots> GridSlotClass;
-
+	
 	UPROPERTY(EditAnywhere,Category="Inventory|Grid Settings")
 	int32 Rows;
 
@@ -132,4 +142,10 @@ private:
 
 	UPROPERTY(EditAnywhere,Category="Inventory|Grid Settings")
 	float TileSize;
+	
+	UPROPERTY(EditAnywhere,Category="Inventory|Hover")
+	TSubclassOf<UInv_HoverItem> HoverItemClass;
+
+	UPROPERTY()
+	TObjectPtr<UInv_HoverItem> HoverItem;
 };

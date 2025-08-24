@@ -23,3 +23,8 @@ void UInv_SlottedItems::SetStackCount(int32 NewStackCount) {
 		ItemStackCount->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
+
+FReply UInv_SlottedItems::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) {
+	OnSlottedItemClicked.Broadcast(GridIndex,InMouseEvent);
+	return FReply::Handled();
+}

@@ -18,6 +18,7 @@
 #include "Widgets/Inventory/GridSlots/Inv_GridSlots.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Items/Manifest/Inv_ItemManifest.h"
+#include "Widgets/Inventory/HoveItem/Inv_HoverItem.h"
 #include "Widgets/Inventory/SlottedItem/Inv_SlottedItems.h"
 
 void UInv_InventoryGrid::LogGridSlotsInfo(FString CalledFrom) const {
@@ -365,6 +366,7 @@ UInv_SlottedItems* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Ite
 	SlottedItem->SetGridIndex(Index);
 	SlottedItem->SetIsStackable(bStackable);
 	SlottedItem->SetStackCount(bStackable ? StackAmount : 0);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this,&ThisClass::OnSlottedItemClicked);
 
 	return SlottedItem;
 }
@@ -385,6 +387,13 @@ void UInv_InventoryGrid::SetSlottedItemImage(const UInv_SlottedItems* SlottedIte
 	Brush.DrawAs = ESlateBrushDrawType::Image;
 	Brush.ImageSize = GetDrawSize(GridFragment);
 	SlottedItem->SetImageBrush(Brush);
+}
+
+bool UInv_InventoryGrid::IsRightClick(const FPointerEvent& MouseEvent) const {
+	return MouseEvent.GetEffectingButton() == EKeys::RightMouseButton;
+}
+bool UInv_InventoryGrid::IsLeftClick(const FPointerEvent& MouseEvent) const {
+	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
@@ -412,5 +421,14 @@ void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
 				SlotAvailability.AmountToFill
 			);
 		}
+	}
+}
+
+void UInv_InventoryGrid::OnSlottedItemClicked(int32 Index, const FPointerEvent& MouseEvent) {
+	check(GridSlots.IsValidIndex(Index));
+
+	UInv_InventoryItem* ClickedInventoryItem = GridSlots[Index]->GetInventoryItem().Get();
+	if (!IsValid(HoverItem) && IsLeftClick(MouseEvent)) {
+		//TODO : pickup - assign the hover item , and remove the slotted item from grid.
 	}
 }
