@@ -371,6 +371,31 @@ UInv_SlottedItems* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Ite
 	return SlottedItem;
 }
 
+UInv_HoverItem* UInv_InventoryGrid::CreateHoverItem(UInv_InventoryItem* InventoryItem) const {
+	
+	UInv_HoverItem* HoverItem = CreateWidget<UInv_HoverItem>(GetOwningPlayer(),HoverItemClass);
+	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(InventoryItem, FragmentTags::Grid);
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(InventoryItem, FragmentTags::Icon);
+
+	if (!GridFragment || !ImageFragment) return nullptr;
+
+	const FVector2D DrawSize = GetDrawSize(GridFragment);
+	
+	FSlateBrush IconBrush;
+	IconBrush.SetResourceObject(ImageFragment->GetIcon());
+	IconBrush.DrawAs = ESlateBrushDrawType::Image;
+	IconBrush.ImageSize = DrawSize * UWidgetLayoutLibrary::GetViewportScale(this);
+
+	HoverItem->SetImageBrush(IconBrush);
+	HoverItem->SetGridDimensions(GridFragment->GetGridSize());
+	HoverItem->SetInventoryItem(InventoryItem);
+	HoverItem->SetStackable(InventoryItem->IsStackable());
+
+	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,HoverItem);
+
+	return HoverItem;
+}
+
 void UInv_InventoryGrid::AddSlottedItemToCanvas(const int32 Index, const FInv_GridFragment* GridFragment,
                                                 UInv_SlottedItems* SlottedItem) const {
 	CanvasPanel->AddChild(SlottedItem);
@@ -394,6 +419,12 @@ bool UInv_InventoryGrid::IsRightClick(const FPointerEvent& MouseEvent) const {
 }
 bool UInv_InventoryGrid::IsLeftClick(const FPointerEvent& MouseEvent) const {
 	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
+}
+
+void UInv_InventoryGrid::PickUp(UInv_InventoryItem* Item, const int32 GridIndex) {
+	if (!IsValid(HoveringItem)) {
+		HoveringItem = CreateHoverItem(Item);
+	}
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
@@ -428,7 +459,7 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 Index, const FPointerEvent& 
 	check(GridSlots.IsValidIndex(Index));
 
 	UInv_InventoryItem* ClickedInventoryItem = GridSlots[Index]->GetInventoryItem().Get();
-	if (!IsValid(HoverItem) && IsLeftClick(MouseEvent)) {
-		//TODO : pickup - assign the hover item , and remove the slotted item from grid.
+	if (!IsValid(HoveringItem) && IsLeftClick(MouseEvent)) {
+		PickUp(ClickedInventoryItem, Index);
 	}
 }

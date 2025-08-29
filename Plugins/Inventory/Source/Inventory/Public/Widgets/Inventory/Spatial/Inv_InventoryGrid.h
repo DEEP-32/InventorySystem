@@ -101,12 +101,18 @@ private:
 		const FInv_ImageFragment* ImageFragment
 	) const;
 
+	UInv_HoverItem* CreateHoverItem(UInv_InventoryItem* InventoryItem) const;
+
 	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
 	//End index searching algorithm
 
+	//Item picking up
 	bool IsRightClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
+	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
+	//Item picking up
+	
 	
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
@@ -147,5 +153,5 @@ private:
 	TSubclassOf<UInv_HoverItem> HoverItemClass;
 
 	UPROPERTY()
-	TObjectPtr<UInv_HoverItem> HoverItem;
+	TObjectPtr<UInv_HoverItem> HoveringItem;
 };
