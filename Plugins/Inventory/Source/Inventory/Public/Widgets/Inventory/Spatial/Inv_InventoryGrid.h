@@ -102,6 +102,7 @@ private:
 	) const;
 
 	UInv_HoverItem* CreateHoverItem(UInv_InventoryItem* InventoryItem) const;
+	UInv_HoverItem* CreateHoverItem(UInv_InventoryItem* InventoryItem,const int32 Index,const int32 PreviousIndex) const;
 
 	void AddSlottedItemToCanvas(const int32 Index,const FInv_GridFragment* GridFragment,UInv_SlottedItems* SlottedItem) const;
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
@@ -111,6 +112,8 @@ private:
 	bool IsRightClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
 	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
+
+	void RemoveItemFromGrid(UInv_InventoryItem* Item,const int32 GridIndex);
 	//Item picking up
 	
 	
