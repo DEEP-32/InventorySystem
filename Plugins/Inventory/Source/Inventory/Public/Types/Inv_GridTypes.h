@@ -56,3 +56,32 @@ struct FInv_SlotAvailabilityResult {
 			*SlotsStr);
 	}
 };
+
+UENUM(BlueprintType)
+enum class EInv_TileQuadrant : uint8 {
+	TopLeft,
+	TopRight,
+	BottomLeft,
+	BottomRight,
+	None
+};
+
+USTRUCT(BlueprintType)
+struct FInv_TileParameter {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
+	FIntPoint TileCord;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
+	int32 TileIndex = -1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
+	EInv_TileQuadrant Quadrant = EInv_TileQuadrant::None;
+};
+
+inline bool operator==(const FInv_TileParameter& A, const FInv_TileParameter& B) {
+	return A.TileCord == B.TileCord &&
+		   A.TileIndex == B.TileIndex &&
+		   A.Quadrant == B.Quadrant;
+}

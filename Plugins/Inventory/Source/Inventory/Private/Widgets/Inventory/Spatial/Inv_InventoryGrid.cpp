@@ -68,6 +68,15 @@ void UInv_InventoryGrid::NativeOnInitialized() {
 	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
 }
 
+void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime) {
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	const FVector2D CanvasPos = UInv_WidgetUtils::GetWidgetPosition(CanvasPanel);
+	const FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+
+	UpdateTileParameters(CanvasPos, MousePos);
+}
+
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
 	if (!MatchesCategory(Item)) return;
 
@@ -431,6 +440,34 @@ bool UInv_InventoryGrid::IsLeftClick(const FPointerEvent& MouseEvent) const {
 	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
 }
 
+FIntPoint UInv_InventoryGrid::CalculateHoveredCoordinates(const FVector2D& CanvasPos, const FVector2D& MousePos) const {
+	return FIntPoint {
+		static_cast<int32>(FMath::FloorToInt((MousePos.X - CanvasPos.X) / TileSize)),
+		static_cast<int32>(FMath::FloorToInt((MousePos.Y - CanvasPos.Y) / TileSize)),
+	};
+}
+
+EInv_TileQuadrant UInv_InventoryGrid::CalculateHoveredQuadrant(const FVector2D& CanvasPos,
+	const FVector2D& MousePos) const {
+
+	EInv_TileQuadrant HoveredQuadrant = EInv_TileQuadrant::None;
+
+	//calculate relative position within the current tile
+	const float TileLocalX = FMath::Fmod((MousePos.X - CanvasPos.X),TileSize);
+	const float TileLocalY = FMath::Fmod((MousePos.Y - CanvasPos.Y),TileSize);
+	
+	const bool bIsTop = TileLocalY < TileSize * .5f;
+	const bool bIsLeft = TileLocalX < TileSize * .5f;
+
+
+	if (bIsTop && bIsLeft) HoveredQuadrant = EInv_TileQuadrant::TopLeft;
+	else if (bIsTop && !bIsLeft) HoveredQuadrant = EInv_TileQuadrant::TopRight;
+	else if (!bIsTop && bIsLeft) HoveredQuadrant = EInv_TileQuadrant::BottomLeft;
+	else if (!bIsTop && !bIsLeft) HoveredQuadrant = EInv_TileQuadrant::BottomRight;
+
+	return HoveredQuadrant;
+}
+
 void UInv_InventoryGrid::PickUp(UInv_InventoryItem* Item, const int32 GridIndex) {
 	if (!IsValid(HoveringItem)) {
 		HoveringItem = CreateHoverItem(Item,GridIndex,GridIndex);
@@ -461,6 +498,16 @@ void UInv_InventoryGrid::RemoveItemFromGrid(UInv_InventoryItem* Item, const int3
 		SlottedItems.RemoveAndCopyValue(GridIndex,FoundSlottedItem);
 		FoundSlottedItem->RemoveFromParent();
 	}
+}
+
+void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPos, const FVector2D& MousePos) {
+	//Calculate tile coordinate.
+	const FIntPoint HoveredTileCoordinates = CalculateHoveredCoordinates(CanvasPos, MousePos);
+	LastTileParameter = TileParameter;
+	TileParameter.TileCord = HoveredTileCoordinates;
+	TileParameter.TileIndex = UInv_WidgetUtils::GetIndexFromPosition(HoveredTileCoordinates, Columns);
+	TileParameter.Quadrant = CalculateHoveredQuadrant(CanvasPos, MousePos);
+	//Handle grid state if we are hovering over the grid with item.
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {

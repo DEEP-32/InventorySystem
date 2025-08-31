@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Inv_WidgetUtils.generated.h"
 
+class UWidget;
 /**
  * 
  */
@@ -14,6 +15,10 @@ class INVENTORY_API UInv_WidgetUtils : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(BlueprintCallable,Category="Inventory")
+	static FVector2D GetWidgetPosition(UWidget* Widget);
+	
 	/**
 	 * Calculates the linear index of a grid slot based on its 2D position (row and column) and the number of columns in the grid.
 	 *

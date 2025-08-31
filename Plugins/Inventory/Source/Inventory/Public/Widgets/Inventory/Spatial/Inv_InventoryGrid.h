@@ -49,12 +49,12 @@ public:
 	
 public:
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* Item);
 
 	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* Item);
-	
 
 
 private:
@@ -108,13 +108,18 @@ private:
 	void SetSlottedItemImage(const UInv_SlottedItems* SlottedItem,const FInv_GridFragment* GridFragment,const FInv_ImageFragment* ImageFragment) const;
 	//End index searching algorithm
 
-	//Item picking up
+	//Item picking up and hovering
+	//utils
 	bool IsRightClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
+	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
+	EInv_TileQuadrant CalculateHoveredQuadrant(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
+	//end utils
+	
 	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
-
 	void RemoveItemFromGrid(UInv_InventoryItem* Item,const int32 GridIndex);
-	//Item picking up
+	void UpdateTileParameters(const FVector2D& CanvasPos,const FVector2D& MousePos);
+	//end Item picking up
 	
 	
 	UFUNCTION()
@@ -157,4 +162,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UInv_HoverItem> HoveringItem;
+
+
+	FInv_TileParameter TileParameter;
+	FInv_TileParameter LastTileParameter;
 };
