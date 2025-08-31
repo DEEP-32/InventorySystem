@@ -115,6 +115,7 @@ private:
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
 	EInv_TileQuadrant CalculateHoveredQuadrant(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
 	FIntPoint CalculateStartingCoordinates(const FIntPoint& Coordinate,const FIntPoint& Dimension, const EInv_TileQuadrant Quadrant) const;
+	FInv_SpaceQueryResult CheckHoverPosition(const FIntPoint& Position,const FIntPoint& Dimension);
 	//end utils
 	
 	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
@@ -168,4 +169,9 @@ private:
 
 	FInv_TileParameter TileParameter;
 	FInv_TileParameter LastTileParameter;
+
+	//Index where an item will be placed if we click on the grid at the valid location
+	int32 ItemDropIndex = -1;
+
+	FInv_SpaceQueryResult CurrentSpaceQuery;
 };

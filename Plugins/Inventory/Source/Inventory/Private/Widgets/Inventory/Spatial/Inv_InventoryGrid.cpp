@@ -501,6 +501,43 @@ FIntPoint UInv_InventoryGrid::CalculateStartingCoordinates(const FIntPoint& Coor
 	
 }
 
+FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Position,
+	const FIntPoint& Dimension) {
+
+	FInv_SpaceQueryResult Result;
+
+	//check hover position
+	// in the grid bounds?
+	int32 TileIndex = UInv_WidgetUtils::GetIndexFromPosition(Position,Columns);
+	if (!IsInGridBounds(TileIndex,Dimension)) {
+		return Result;
+	}
+
+	// any items in the way
+	TSet<int32> OccupiedOriginalGridIndex;
+	UInv_InventoryStatics::ForEach2D(
+		GridSlots,
+		TileIndex,
+		Dimension,
+		Columns,
+		[&](const UInv_GridSlots* GridSlot) {
+			if (GridSlot->GetInventoryItem().IsValid()) {
+				OccupiedOriginalGridIndex.Add(GridSlot->GetOriginSlotIndex());
+				Result.bHasSpace = false;
+			}
+		}
+	);
+	// if so is there only one item in the way (can we swap?)
+
+	if (OccupiedOriginalGridIndex.Num() == 1) { //single item at position - its valid for swapping/combine
+		const int32 Index = *OccupiedOriginalGridIndex.CreateConstIterator();
+		Result.ValidItem = GridSlots[Index]->GetInventoryItem();
+		Result.OriginalIndex = GridSlots[Index]->GetOriginSlotIndex();
+	}
+
+	return Result;
+}
+
 void UInv_InventoryGrid::PickUp(UInv_InventoryItem* Item, const int32 GridIndex) {
 	if (!IsValid(HoveringItem)) {
 		HoveringItem = CreateHoverItem(Item,GridIndex,GridIndex);
@@ -551,10 +588,10 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameter& NewTi
 	// get hover item dimension
 	const FIntPoint HoverItemDimensions = HoveringItem->GetGridDimensions();
 	// calculate the starting position for highlight
-	//check hover position
-		// in the grid bounds?
-		// any items in the way
-		// if so is there only one item in the way (can we swap?)
+	const FIntPoint StartingCoordinates = CalculateStartingCoordinates(NewTileParameter.TileCord,HoverItemDimensions,NewTileParameter.Quadrant);
+	ItemDropIndex = UInv_WidgetUtils::GetIndexFromPosition(StartingCoordinates,Columns);
+	CurrentSpaceQuery = CheckHoverPosition(NewTileParameter.TileCord,HoverItemDimensions);
+	
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
