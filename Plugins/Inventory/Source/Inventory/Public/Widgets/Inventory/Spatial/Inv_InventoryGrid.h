@@ -114,11 +114,13 @@ private:
 	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
 	EInv_TileQuadrant CalculateHoveredQuadrant(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
+	FIntPoint CalculateStartingCoordinates(const FIntPoint& Coordinate,const FIntPoint& Dimension, const EInv_TileQuadrant Quadrant) const;
 	//end utils
 	
 	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
 	void RemoveItemFromGrid(UInv_InventoryItem* Item,const int32 GridIndex);
 	void UpdateTileParameters(const FVector2D& CanvasPos,const FVector2D& MousePos);
+	void OnTileParametersUpdated(const FInv_TileParameter& NewTileParameter);
 	//end Item picking up
 	
 	

@@ -468,6 +468,39 @@ EInv_TileQuadrant UInv_InventoryGrid::CalculateHoveredQuadrant(const FVector2D& 
 	return HoveredQuadrant;
 }
 
+FIntPoint UInv_InventoryGrid::CalculateStartingCoordinates(const FIntPoint& Coordinate, const FIntPoint& Dimension,
+	const EInv_TileQuadrant Quadrant) const {
+
+	const int32 HasEvenWidth = Dimension.X % 2 == 0 ? 1 : 0;
+	const int32 HasEvenHeight = Dimension.Y % 2 == 0 ? 1 : 0;
+
+	FIntPoint StartingCoordinates;
+	switch (Quadrant) {
+		case EInv_TileQuadrant::TopLeft:
+			StartingCoordinates.X = Coordinate.X - FMath::FloorToInt(.5f * Dimension.X);
+			StartingCoordinates.Y = Coordinate.Y - FMath::FloorToInt(.5f * Dimension.Y);
+			break;
+		case EInv_TileQuadrant::TopRight:
+			StartingCoordinates.X = Coordinate.X - FMath::FloorToInt(.5f * Dimension.X) + HasEvenWidth;
+			StartingCoordinates.Y = Coordinate.Y - FMath::FloorToInt(.5f * Dimension.Y);
+			break;
+		case EInv_TileQuadrant::BottomLeft:
+			StartingCoordinates.X = Coordinate.X - FMath::FloorToInt(.5f * Dimension.X);
+			StartingCoordinates.Y = Coordinate.Y - FMath::FloorToInt(.5f * Dimension.Y) + HasEvenHeight;
+			break;
+		case EInv_TileQuadrant::BottomRight:
+			StartingCoordinates.X = Coordinate.X - FMath::FloorToInt(.5f * Dimension.X) + HasEvenWidth;
+			StartingCoordinates.Y = Coordinate.Y - FMath::FloorToInt(.5f * Dimension.Y) + HasEvenHeight;
+			break;
+		default:case EInv_TileQuadrant::None:
+			UE_LOG(LogInventory,Error,TEXT("Invalid tile quadrant"));
+			return FIntPoint(-1,-1);
+	}
+
+	return StartingCoordinates;
+	
+}
+
 void UInv_InventoryGrid::PickUp(UInv_InventoryItem* Item, const int32 GridIndex) {
 	if (!IsValid(HoveringItem)) {
 		HoveringItem = CreateHoverItem(Item,GridIndex,GridIndex);
@@ -507,7 +540,21 @@ void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPos, const 
 	TileParameter.TileCord = HoveredTileCoordinates;
 	TileParameter.TileIndex = UInv_WidgetUtils::GetIndexFromPosition(HoveredTileCoordinates, Columns);
 	TileParameter.Quadrant = CalculateHoveredQuadrant(CanvasPos, MousePos);
+	
 	//Handle grid state if we are hovering over the grid with item.
+	OnTileParametersUpdated(TileParameter);
+}
+
+void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameter& NewTileParameter) {
+	if (!IsValid(HoveringItem)) return;
+
+	// get hover item dimension
+	const FIntPoint HoverItemDimensions = HoveringItem->GetGridDimensions();
+	// calculate the starting position for highlight
+	//check hover position
+		// in the grid bounds?
+		// any items in the way
+		// if so is there only one item in the way (can we swap?)
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
