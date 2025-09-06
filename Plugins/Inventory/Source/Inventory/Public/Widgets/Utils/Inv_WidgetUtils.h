@@ -18,6 +18,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="Inventory")
 	static FVector2D GetWidgetPosition(UWidget* Widget);
+
+	UFUNCTION(BlueprintCallable)
+	static FVector2D GetWidgetSize(UWidget* Widget);
 	
 	/**
 	 * Calculates the linear index of a grid slot based on its 2D position (row and column) and the number of columns in the grid.
@@ -36,4 +39,7 @@ public:
 	 * @return The 2D grid position as an FIntPoint, where X is the column and Y is the row.
 	 */
 	static FIntPoint GetPositionFromIndex(const int32 Index,const int32 Columns);
+	
+	UFUNCTION(BlueprintCallable)
+	static bool IsWithInBounds(const FVector2D& BoundaryPos,const FVector2D& Size,const FVector2D& Pos);
 };

@@ -74,7 +74,12 @@ void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	const FVector2D CanvasPos = UInv_WidgetUtils::GetWidgetPosition(CanvasPanel);
 	const FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
+	FVector2D CanvasSize = UInv_WidgetUtils::GetWidgetSize(CanvasPanel);
+	if (CursorExitedCanvas(CanvasPos,CanvasSize,MousePos)) {
+		return;
+	}
 	UpdateTileParameters(CanvasPos, MousePos);
+	
 }
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item) {
@@ -236,12 +241,10 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlots* GridSlot, co
 
 	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
 	if (!SubItem->IsStackable()) {
-		UE_LOG(LogInventory, Warning, TEXT("Checking slot constraints : Item is not stackable"));
 		return false;
 	}
 
 	if (!SubItem->IsSameItemType(ItemType)) {
-		UE_LOG(LogInventory, Warning, TEXT("Checking slot constraints : Item is not stackable"));
 		return false;
 	}
 
@@ -513,6 +516,8 @@ FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Po
 		return Result;
 	}
 
+	Result.bHasSpace = true;
+
 	// any items in the way
 	TSet<int32> OccupiedOriginalGridIndex;
 	UInv_InventoryStatics::ForEach2D(
@@ -536,6 +541,20 @@ FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Po
 	}
 
 	return Result;
+}
+
+bool UInv_InventoryGrid::CursorExitedCanvas(const FVector2D& CanvasBoundaryPos, const FVector2D& BoundarySize,
+	const FVector2D& CurrentLocation) {
+
+	bMouseWithInCanvasLastFrame = bMouseWithInCanvas;
+	bMouseWithInCanvas = UInv_WidgetUtils::IsWithInBounds(CanvasBoundaryPos,BoundarySize,CurrentLocation);
+
+	if (!bMouseWithInCanvas && bMouseWithInCanvasLastFrame) {
+		UnhighlightSlots(LastHighlightedIndex,LastHighlightedDimensions);
+		return true;
+	}
+	
+	return false;
 }
 
 void UInv_InventoryGrid::PickUp(UInv_InventoryItem* Item, const int32 GridIndex) {
@@ -572,6 +591,11 @@ void UInv_InventoryGrid::RemoveItemFromGrid(UInv_InventoryItem* Item, const int3
 
 void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPos, const FVector2D& MousePos) {
 	//Calculate tile coordinate.
+
+	if (!bMouseWithInCanvas) {
+		return;
+	}
+	
 	const FIntPoint HoveredTileCoordinates = CalculateHoveredCoordinates(CanvasPos, MousePos);
 	LastTileParameter = TileParameter;
 	TileParameter.TileCord = HoveredTileCoordinates;
@@ -591,7 +615,61 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameter& NewTi
 	const FIntPoint StartingCoordinates = CalculateStartingCoordinates(NewTileParameter.TileCord,HoverItemDimensions,NewTileParameter.Quadrant);
 	ItemDropIndex = UInv_WidgetUtils::GetIndexFromPosition(StartingCoordinates,Columns);
 	CurrentSpaceQuery = CheckHoverPosition(NewTileParameter.TileCord,HoverItemDimensions);
+
 	
+	if (CurrentSpaceQuery.bHasSpace) {
+		HighlightSlots(ItemDropIndex,HoverItemDimensions);
+		return;
+	}
+
+	UnhighlightSlots(LastHighlightedIndex,LastHighlightedDimensions);
+
+	if (CurrentSpaceQuery.ValidItem.IsValid()) {
+		//TODO : there is a single item in this space we can swap or add stacks.
+	}
+	
+}
+
+void UInv_InventoryGrid::HighlightSlots(const int32 Index, const FIntPoint& Dimensions) {
+	if (!bMouseWithInCanvas) return;
+
+	UE_LOG(LogTemp,Warning,TEXT("HOVER TEST : calling unhighlight function from highlight slots : with index : %d"),Index)
+	UnhighlightSlots(LastHighlightedIndex,LastHighlightedDimensions);
+	
+	UInv_InventoryStatics::ForEach2D(
+		GridSlots,
+		Index,
+		Dimensions,
+		Columns,
+		[&](UInv_GridSlots* GridSlot) {
+			GridSlot->SetGridState(EInv_GridSlotState::HoveredOver);
+		}
+	);
+
+	LastHighlightedDimensions = Dimensions;
+	LastHighlightedIndex = Index;
+
+}
+void UInv_InventoryGrid::UnhighlightSlots(const int32 Index, const FIntPoint& Dimensions) {
+	UInv_InventoryStatics::ForEach2D(
+		GridSlots,
+		Index,
+		Dimensions,
+		Columns,
+		[&](UInv_GridSlots* GridSlot) {
+			UE_LOG(LogInventory, Warning, TEXT("HOVER TEST : calling unhighlight grid slot state setting to unoccupied : %d for index : %d and is that available : %s") ,GridSlot->GetGridState(),GridSlot->GetIndex(),GridSlot->IsAvailable() ? TEXT("true") : TEXT("false"));
+			
+			if ((GridSlot->GetGridState() == EInv_GridSlotState::HoveredOver && !GridSlot->GetInventoryItem().IsValid()) || GridSlot->IsAvailable()) {
+				GridSlot->SetGridState(EInv_GridSlotState::Unoccupied);
+				UE_LOG(LogInventory, Warning, TEXT("HOVER TEST : calling unhighlight grid slot state setting to unoccupied : %d for index : %d") ,GridSlot->GetGridState(),GridSlot->GetIndex());
+				
+			}
+			else {
+				GridSlot->SetGridState(EInv_GridSlotState::Occupied);
+				UE_LOG(LogInventory, Warning, TEXT("HOVER TEST : grid slot state setting to hovered : %d for index : %d") ,GridSlot->GetGridState(),GridSlot->GetIndex());
+			}
+		}
+	);
 }
 
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {

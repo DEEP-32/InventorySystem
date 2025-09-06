@@ -116,12 +116,19 @@ private:
 	EInv_TileQuadrant CalculateHoveredQuadrant(const FVector2D& CanvasPos,const FVector2D& MousePos) const;
 	FIntPoint CalculateStartingCoordinates(const FIntPoint& Coordinate,const FIntPoint& Dimension, const EInv_TileQuadrant Quadrant) const;
 	FInv_SpaceQueryResult CheckHoverPosition(const FIntPoint& Position,const FIntPoint& Dimension);
+
+	/**
+	 * Return wether the cursor has exited the canvas , and also updated the related bools
+	 */
+	bool CursorExitedCanvas(const FVector2D& CanvasBoundaryPos,const FVector2D& BoundarySize,const FVector2D& CurrentLocation);
 	//end utils
 	
 	void PickUp(UInv_InventoryItem* Item, int32 GridIndex);
 	void RemoveItemFromGrid(UInv_InventoryItem* Item,const int32 GridIndex);
 	void UpdateTileParameters(const FVector2D& CanvasPos,const FVector2D& MousePos);
 	void OnTileParametersUpdated(const FInv_TileParameter& NewTileParameter);
+	void HighlightSlots(const int32 Index,const FIntPoint& Dimensions);
+	void UnhighlightSlots(const int32 Index,const FIntPoint& Dimensions);
 	//end Item picking up
 	
 	
@@ -174,4 +181,10 @@ private:
 	int32 ItemDropIndex = -1;
 
 	FInv_SpaceQueryResult CurrentSpaceQuery;
+
+	bool bMouseWithInCanvas = false;
+	bool bMouseWithInCanvasLastFrame = false;
+
+	int32 LastHighlightedIndex;
+	FIntPoint LastHighlightedDimensions;
 };

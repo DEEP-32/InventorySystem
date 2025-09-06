@@ -8,6 +8,7 @@
 #include "Widgets/Data/EInv_GridSlotState.h"
 #include "Inv_GridSlots.generated.h"
 
+class UTextBlock;
 class UInv_InventoryItem;
 class UGridSlotStateDataAsset;
 class UImage;
@@ -87,11 +88,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> GridSlotImage;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GridStateText;
+
 	UPROPERTY(EditDefaultsOnly,Category="Inventory|State|Data")
 	TObjectPtr<UGridSlotStateDataAsset> StateDataAsset;
 
 	UPROPERTY(EditAnywhere,Category="Inventory|State")
-	EInv_GridSlotState State;
+	EInv_GridSlotState State = EInv_GridSlotState::Unoccupied;
 
 	void PostStateChange() const;
 };

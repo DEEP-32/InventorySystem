@@ -7,6 +7,7 @@
 #include "Items/Inv_InventoryItem.h"
 
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Widgets/Data/GridSlotStateDataAsset.h"
 
 void UInv_GridSlots::SetInventoryItem(UInv_InventoryItem* NewInventoryItem) {
@@ -17,4 +18,7 @@ void UInv_GridSlots::SetInventoryItem(UInv_InventoryItem* NewInventoryItem) {
 void UInv_GridSlots::PostStateChange() const {
 	const FSlateBrush SlateBrush = StateDataAsset->GetBrushForState(State);
 	GridSlotImage->SetBrush(SlateBrush);
+	GridStateText->SetText(
+		FText::FromString(FString::Printf(TEXT("%d"), State))
+	);
 }
