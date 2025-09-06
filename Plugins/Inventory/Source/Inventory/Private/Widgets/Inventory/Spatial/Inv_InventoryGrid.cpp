@@ -624,8 +624,28 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameter& NewTi
 
 	UnhighlightSlots(LastHighlightedIndex,LastHighlightedDimensions);
 
-	if (CurrentSpaceQuery.ValidItem.IsValid()) {
-		//TODO : there is a single item in this space we can swap or add stacks.
+	if (CurrentSpaceQuery.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQuery.OriginalIndex)) {
+
+		//TODO : add the separate enum for hovering state and add those state as sub state in data assets
+		// so that we can config the those sub state textures.
+		
+		UnhighlightSlots(LastHighlightedIndex,LastHighlightedDimensions);
+		
+		const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(CurrentSpaceQuery.ValidItem.Get(),FragmentTags::Grid);
+		if (!GridFragment) return;
+
+		UInv_InventoryStatics::ForEach2D(
+			GridSlots,
+			CurrentSpaceQuery.OriginalIndex,
+			GridFragment->GetGridSize(),
+			Columns,
+			[&](UInv_GridSlots* GridSlot) {
+				GridSlot->SetGridState(EInv_GridSlotState::GreyedOut);
+			}
+		);
+
+		LastHighlightedIndex = CurrentSpaceQuery.OriginalIndex;
+		LastHighlightedDimensions = GridFragment->GetGridSize();
 	}
 	
 }
