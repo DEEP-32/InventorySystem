@@ -57,6 +57,7 @@ void UInv_InventoryGrid::LogGridSlotsInfo(FString CalledFrom) const {
 
 void UInv_InventoryGrid::NativeOnInitialized() {
 	Super::NativeOnInitialized();
+
 	ConstructGrid();
 
 	InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
@@ -109,6 +110,11 @@ void UInv_InventoryGrid::ConstructGrid() {
 			CanvasSlot->SetSize(FVector2D(TileSize));
 			CanvasSlot->SetPosition(TilePosition * TileSize);
 
+			//binding callbacks
+			GridSlot->OnGridSlotClicked.AddDynamic(this, &ThisClass::OnGridSlotClicked);
+			GridSlot->OnGridSlotHovered.AddDynamic(this, &ThisClass::OnGridSlotHovered);
+			GridSlot->OnGridSlotUnhovered.AddDynamic(this, &ThisClass::OnGridSlotUnhovered);
+
 			GridSlots.Add(GridSlot);
 		}
 	}
@@ -120,20 +126,6 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_Invent
 
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& ItemManifest) {
 	FInv_SlotAvailabilityResult Result;
-
-	/*TODO:
-	 * 1. Determine if the item is stackable.
-	 * 2. Determine how many stack to add.
-	 * 3. For each grid slots:
-	 *      if we dont have any square to fill , break out of the loop early.
-	 *      is this index claimed yet.
-	 *      Can the item fit here. (i.e. is the item out of grid bounds.)
-	 *      is there any room at this index? (i.e. are there any other items at this index?)
-	 *      check for all the grid slots with in range of item grid size.
-	 *      How much to fill in that particular slot.
-	 *      Update the amount left to fill.
-	 * 4. How much is the remainder.
-	*/
 
 	const FInv_StackableFragment* StackableFragment = ItemManifest.GetFragmentOfType<FInv_StackableFragment>();
 	Result.bStackable = StackableFragment != nullptr;
@@ -726,5 +718,36 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 Index, const FPointerEvent& 
 	UInv_InventoryItem* ClickedInventoryItem = GridSlots[Index]->GetInventoryItem().Get();
 	if (!IsValid(HoveringItem) && IsLeftClick(MouseEvent)) {
 		PickUp(ClickedInventoryItem, Index);
+	}
+}
+
+void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent) {
+	UE_LOG(LogInventory, Log, TEXT("OnGridSlotClicked: GridIndex=%d, Button=%s"), GridIndex, *MouseEvent.GetEffectingButton().ToString());
+
+	if (!IsValid(HoveringItem)) return;
+
+	UInv_GridSlots* GridSlot = GridSlots[GridIndex];
+	if (GridSlot->IsAvailable()) {
+		GridSlot->SetUIState(EInv_GridUIState::Clicked);
+	}
+	
+}
+
+void UInv_InventoryGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent) {
+	if (IsValid(HoveringItem)) return;
+
+	UInv_GridSlots* GridSlot = GridSlots[GridIndex];
+	UE_LOG(LogInventory, Warning, TEXT("OnGridSlotUnhovered: GridIndex=%d, Button=%s, slot available=%s"), GridIndex, *MouseEvent.GetEffectingButton().ToString(),GridSlot->IsAvailable() ? TEXT("true") : TEXT("false"));
+	if (GridSlot->IsAvailable()) {
+		GridSlot->SetUIState(EInv_GridUIState::Unhovered);
+	}
+}
+
+void UInv_InventoryGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent) {
+	if (IsValid(HoveringItem)) return;
+	UInv_GridSlots* GridSlot = GridSlots[GridIndex];
+	UE_LOG(LogInventory, Warning, TEXT("OnGridSlotHovered: GridIndex=%d, Button=%s, slot available=%s"), GridIndex, *MouseEvent.GetEffectingButton().ToString(),GridSlot->IsAvailable() ? TEXT("true") : TEXT("false"));
+	if (GridSlot->IsAvailable()) {
+		GridSlot->SetUIState(EInv_GridUIState::Hovered);
 	}
 }

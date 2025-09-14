@@ -15,10 +15,33 @@ void UInv_GridSlots::SetInventoryItem(UInv_InventoryItem* NewInventoryItem) {
 	InventoryItem = NewInventoryItem;
 }
 
+void UInv_GridSlots::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) {
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	OnGridSlotHovered.Broadcast(Index,InMouseEvent);
+}
+
+void UInv_GridSlots::NativeOnMouseLeave(const FPointerEvent& InMouseEvent) {
+	Super::NativeOnMouseLeave(InMouseEvent);
+	OnGridSlotUnhovered.Broadcast(Index,InMouseEvent);
+}
+
+FReply UInv_GridSlots::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) {
+	OnGridSlotClicked.Broadcast(Index,InMouseEvent);
+	return FReply::Handled();
+}
+
 void UInv_GridSlots::PostStateChange() const {
-	const FSlateBrush SlateBrush = StateDataAsset->GetBrushForState(State);
+	const FSlateBrush& SlateBrush = StateDataAsset->GetBrushForState(State);
 	GridSlotImage->SetBrush(SlateBrush);
 	GridStateText->SetText(
 		FText::FromString(FString::Printf(TEXT("%d"), State))
+	);
+}
+
+void UInv_GridSlots::PostUiStateChange() const {
+	const FSlateBrush& SlateBrush = StateDataAsset->GetBrushForUIState(UiState);
+	GridSlotImage->SetBrush(SlateBrush);
+	UiStateText->SetText(
+		FText::FromString(FString::Printf(TEXT("%d"), UiState))
 	);
 }

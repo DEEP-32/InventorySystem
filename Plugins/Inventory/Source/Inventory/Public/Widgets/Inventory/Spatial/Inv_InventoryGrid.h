@@ -131,12 +131,23 @@ private:
 	void UnhighlightSlots(const int32 Index,const FIntPoint& Dimensions);
 	//end Item picking up
 	
-	
+	// Callbacks
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
 
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 Index,const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotClicked(int32 GridIndex,const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex,const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex,const FPointerEvent& MouseEvent);
+	
+	//end callbacks
 	
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	
@@ -171,7 +182,7 @@ private:
 	TSubclassOf<UInv_HoverItem> HoverItemClass;
 
 	UPROPERTY()
-	TObjectPtr<UInv_HoverItem> HoveringItem;
+	TObjectPtr<UInv_HoverItem> HoveringItem = nullptr;
 
 
 	FInv_TileParameter TileParameter;

@@ -22,12 +22,22 @@ class INVENTORY_API UGridSlotStateDataAsset : public UDataAsset {
 
 public:
 
-	UPROPERTY(EditDefaultsOnly,Category="Inventory")
+	UPROPERTY(EditDefaultsOnly,Category="Inventory|Logical States")
 	TMap<EInv_GridSlotState,FSlateBrush> StateBrushes;
 
+
+	UPROPERTY(EditDefaultsOnly,Category="Inventory|UI States")
+	TMap<EInv_GridUIState,FSlateBrush> UIStateBrushes;
+	
+
 	UFUNCTION(BlueprintPure, Category = "Inventory|Appearance")
-	const FSlateBrush GetBrushForState(const EInv_GridSlotState State) const{
+	const FSlateBrush& GetBrushForState(const EInv_GridSlotState State) const{
 		return *StateBrushes.Find(State);
+	}
+
+	UFUNCTION(BlueprintPure, Category = "Inventory|Appearance")
+	const FSlateBrush& GetBrushForUIState(const EInv_GridUIState UIState) const{
+		return *UIStateBrushes.Find(UIState);
 	}
 
 	

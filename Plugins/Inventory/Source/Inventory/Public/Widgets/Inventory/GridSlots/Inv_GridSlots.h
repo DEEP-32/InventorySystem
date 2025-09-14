@@ -13,7 +13,7 @@ class UInv_InventoryItem;
 class UGridSlotStateDataAsset;
 class UImage;
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGridSlotEvent,int32,GridIndex,const FPointerEvent&, MouseEvent);
 
 /**
  * 
@@ -23,7 +23,6 @@ class INVENTORY_API UInv_GridSlots : public UUserWidget {
 	GENERATED_BODY()
 
 public:
-
 	FString GetStateString() const {
 		switch (GetGridState()) {
 			case EInv_GridSlotState::Unoccupied:
@@ -77,6 +76,27 @@ public:
 		PostStateChange();
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void SetUIState(const EInv_GridUIState NewUIState) {
+		this->UiState = NewUIState;
+		PostUiStateChange();
+
+		if (NewUIState == EInv_GridUIState::Unhovered) {
+			//calling this because we want to make the texture reappear for the logical states
+			PostStateChange();
+		}
+	}
+
+public:
+
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
+	FGridSlotEvent OnGridSlotClicked;
+	FGridSlotEvent OnGridSlotHovered;
+	FGridSlotEvent OnGridSlotUnhovered;
+
 private:
 	int32 Index;
 	int32 StackCount;
@@ -91,11 +111,18 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> GridStateText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UiStateText;
+
 	UPROPERTY(EditDefaultsOnly,Category="Inventory|State|Data")
 	TObjectPtr<UGridSlotStateDataAsset> StateDataAsset;
 
 	UPROPERTY(EditAnywhere,Category="Inventory|State")
 	EInv_GridSlotState State = EInv_GridSlotState::Unoccupied;
 
+	UPROPERTY(EditAnywhere,Category="Inventory|UI State")
+	EInv_GridUIState UiState = EInv_GridUIState::Unhovered;
+
 	void PostStateChange() const;
+	void PostUiStateChange() const;
 };
