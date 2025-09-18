@@ -129,7 +129,10 @@ private:
 	void OnTileParametersUpdated(const FInv_TileParameter& NewTileParameter);
 	void HighlightSlots(const int32 Index,const FIntPoint& Dimensions);
 	void UnhighlightSlots(const int32 Index,const FIntPoint& Dimensions);
+	void ClearHoverItem();
 	//end Item picking up
+
+	void PutDownOnIndex(const int32 Index);
 	
 	// Callbacks
 	UFUNCTION()

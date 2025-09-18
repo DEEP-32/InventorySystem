@@ -684,6 +684,31 @@ void UInv_InventoryGrid::UnhighlightSlots(const int32 Index, const FIntPoint& Di
 	);
 }
 
+void UInv_InventoryGrid::ClearHoverItem() {
+	if (!IsValid(HoveringItem)) {
+		return;
+	}
+
+	HoveringItem->SetInventoryItem(nullptr);
+	HoveringItem->SetStackable(false);
+	HoveringItem->SetStackCount(0);
+	HoveringItem->SetPreviousGridIndex(-1);
+	HoveringItem->SetGridDimensions(FIntPoint(0,0));
+	HoveringItem->SetImageBrush(FSlateNoResource());
+
+	HoveringItem->RemoveFromParent();
+	HoveringItem = nullptr;
+
+	//TODO : show mouse cursor.
+}
+
+void UInv_InventoryGrid::PutDownOnIndex(const int32 Index) {
+	AddItemAtIndex(HoveringItem->GetInventoryItem(),Index,HoveringItem->IsStackable(),HoveringItem->GetStackCount());
+	UpdateGridSlots(HoveringItem->GetInventoryItem(),Index,HoveringItem->IsStackable(),HoveringItem->GetStackCount());
+	
+	ClearHoverItem();
+}
+
 void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result) {
 	if (!MatchesCategory(Result.Item.Get())) return;
 
@@ -724,11 +749,17 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 Index, const FPointerEvent& 
 void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent) {
 	UE_LOG(LogInventory, Log, TEXT("OnGridSlotClicked: GridIndex=%d, Button=%s"), GridIndex, *MouseEvent.GetEffectingButton().ToString());
 
-	if (!IsValid(HoveringItem)) return;
+	if (!GridSlots.IsValidIndex(GridIndex)) return;
 
-	UInv_GridSlots* GridSlot = GridSlots[GridIndex];
-	if (GridSlot->IsAvailable()) {
-		GridSlot->SetUIState(EInv_GridUIState::Clicked);
+	//clicked at the location that has item in that slot
+	if (CurrentSpaceQuery.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQuery.OriginalIndex)) {
+		OnSlottedItemClicked(CurrentSpaceQuery.OriginalIndex,MouseEvent);
+		return;
+	}
+
+	auto GridSlot = GridSlots[ItemDropIndex];
+	if (!GridSlot->GetInventoryItem().IsValid()) {
+		PutDownOnIndex(ItemDropIndex);
 	}
 	
 }
