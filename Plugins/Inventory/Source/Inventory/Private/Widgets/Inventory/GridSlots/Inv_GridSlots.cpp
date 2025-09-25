@@ -34,7 +34,7 @@ FReply UInv_GridSlots::NativeOnMouseButtonDown(const FGeometry& InGeometry, cons
 
 void UInv_GridSlots::PostStateChange() const {
 	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningLocalPlayer());
-	const FSlateBrush& SlateBrush = InventorySubsystem->GridSlotStateData->GetBrushForState(State);
+	const FSlateBrush& SlateBrush = InventorySubsystem->GetConfig().GridSlotStateData->GetBrushForState(State);
 	
 	GridSlotImage->SetBrush(SlateBrush);
 	GridStateText->SetText(
@@ -44,7 +44,7 @@ void UInv_GridSlots::PostStateChange() const {
 
 void UInv_GridSlots::PostUiStateChange() const {
 	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningLocalPlayer());
-	const FSlateBrush& SlateBrush = InventorySubsystem->GridSlotStateData->GetBrushForUIState(UiState);
+	const FSlateBrush& SlateBrush = InventorySubsystem->GetConfig().GridSlotStateData->GetBrushForUIState(UiState);
 	GridSlotImage->SetBrush(SlateBrush);
 	UiStateText->SetText(
 		FText::FromString(FString::Printf(TEXT("%d"), UiState))

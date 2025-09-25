@@ -12,15 +12,10 @@ class UCustomMouseIconData;
 /**
  * 
  */
-UCLASS(Blueprintable)
-class INVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem {
+
+USTRUCT(BlueprintType)
+struct FInventorySubsystemConfig {
 	GENERATED_BODY()
-
-public:
-
-
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
 
 	UPROPERTY(EditDefaultsOnly,Category="Inventory|Config")
 	TObjectPtr<UCustomMouseIconData> MouseIconData;
@@ -28,8 +23,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="Inventory|Config")
 	TObjectPtr<UGridSlotStateDataAsset> GridSlotStateData;
+	
+};
 
 
+
+UCLASS(Blueprintable)
+class INVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem {
+	GENERATED_BODY()
+
+private:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	UUserWidget* GetMouseWidget(bool bVisible);
 
@@ -38,6 +41,19 @@ public:
 
 	UPROPERTY()
 	UUserWidget* InvisibleMouseWidget = nullptr;
+
+	UPROPERTY(EditDefaultsOnly,Category="Inventory|Config")
+	FInventorySubsystemConfig Config;
+
+public:
+	
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+
+	
+	FInventorySubsystemConfig& GetConfig() { return Config; }
+
+	
 	
 	
 };
