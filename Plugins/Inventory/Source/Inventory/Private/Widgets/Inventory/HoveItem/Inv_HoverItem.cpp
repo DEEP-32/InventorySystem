@@ -10,7 +10,8 @@ void UInv_HoverItem::SetImageBrush(const FSlateBrush& Brush) const {
 	IconImage->SetBrush(Brush);
 }
 
-void UInv_HoverItem::SetStackCount(const int32 NewStackCount) const {
+void UInv_HoverItem::SetStackCount(const int32 NewStackCount) {
+	StackCount = NewStackCount;
 	if (NewStackCount > 0) {
 		StackCountText->SetText(FText::AsNumber(NewStackCount));
 		StackCountText->SetVisibility(ESlateVisibility::Visible);

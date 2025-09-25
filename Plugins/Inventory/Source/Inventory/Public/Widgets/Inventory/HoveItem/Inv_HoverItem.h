@@ -21,7 +21,7 @@ class INVENTORY_API UInv_HoverItem : public UUserWidget {
 public:
 	//setters
 	void SetImageBrush(const FSlateBrush& Brush) const;
-	void SetStackCount(int32 NewStackCount) const;
+	void SetStackCount(int32 NewStackCount);
 	void SetStackable(bool NewbIsStackable);
 	void SetInventoryItem(UInv_InventoryItem* NewInventoryItem);
 	void SetGridDimensions(const FIntPoint& NewGridDimensions) {

@@ -31,14 +31,10 @@ public:
 	
 
 	UFUNCTION(BlueprintPure, Category = "Inventory|Appearance")
-	const FSlateBrush& GetBrushForState(const EInv_GridSlotState State) const{
-		return *StateBrushes.Find(State);
-	}
+	const FSlateBrush& GetBrushForState(const EInv_GridSlotState State) const;
 
 	UFUNCTION(BlueprintPure, Category = "Inventory|Appearance")
-	const FSlateBrush& GetBrushForUIState(const EInv_GridUIState UIState) const{
-		return *UIStateBrushes.Find(UIState);
-	}
+	const FSlateBrush& GetBrushForUIState(const EInv_GridUIState UIState) const;
 
 	
 	

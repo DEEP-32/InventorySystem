@@ -8,6 +8,7 @@
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Inv_InventoryStatics.generated.h"
 
+class UInventorySubsystem;
 class UInv_ItemComponent;
 class UInv_InventoryComponent;
 /**
@@ -26,6 +27,9 @@ public:
 
 	template<typename T, typename FuncT>
 	static void ForEach2D(TArray<T>& Array,const int32 Index,const FIntPoint& Range,const int32 GridColumns,const FuncT& Func);
+
+	UFUNCTION(BlueprintCallable,Category="Inventory")
+	static UInventorySubsystem* GetInventorySubsystem(UObject* WorldContextObject);
 };
 
 template <typename T, typename FuncT>
