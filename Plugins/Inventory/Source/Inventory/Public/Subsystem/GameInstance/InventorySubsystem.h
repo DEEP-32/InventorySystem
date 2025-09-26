@@ -33,8 +33,6 @@ class INVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem {
 	GENERATED_BODY()
 
 private:
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	UUserWidget* GetMouseWidget(bool bVisible);
 
 	UPROPERTY()
 	UUserWidget* VisibleMouseWidget = nullptr;
@@ -50,6 +48,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	UUserWidget* GetMouseWidget(bool bVisible);
 	
 	FInventorySubsystemConfig& GetConfig() { return Config; }
 

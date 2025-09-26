@@ -56,6 +56,9 @@ public:
 
 	FInv_SlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* Item);
 
+	void ShowCursor();
+	void HideCursor();
+
 
 private:
 	void ConstructGrid();
@@ -131,6 +134,8 @@ private:
 	void UnhighlightSlots(const int32 Index,const FIntPoint& Dimensions);
 	void ClearHoverItem();
 	//end Item picking up
+
+	
 
 	void PutDownOnIndex(const int32 Index);
 	

@@ -18,6 +18,7 @@
 #include "Widgets/Inventory/GridSlots/Inv_GridSlots.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Items/Manifest/Inv_ItemManifest.h"
+#include "Subsystem/GameInstance/InventorySubsystem.h"
 #include "Widgets/Inventory/HoveItem/Inv_HoverItem.h"
 #include "Widgets/Inventory/SlottedItem/Inv_SlottedItems.h"
 
@@ -699,7 +700,21 @@ void UInv_InventoryGrid::ClearHoverItem() {
 	HoveringItem->RemoveFromParent();
 	HoveringItem = nullptr;
 
-	//TODO : show mouse cursor.
+	ShowCursor();
+}
+
+void UInv_InventoryGrid::ShowCursor() {\
+	if (!IsValid(GetOwningPlayer())) return;
+	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningPlayer());
+	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(true);
+	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,MouseWidget);
+	
+}
+void UInv_InventoryGrid::HideCursor() {
+	if (!IsValid(GetOwningPlayer())) return;
+	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningPlayer());
+	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(false);
+	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,MouseWidget);
 }
 
 void UInv_InventoryGrid::PutDownOnIndex(const int32 Index) {

@@ -59,4 +59,5 @@ private:
 	void ShowCraftable();
 
 	void SetActiveGrid(UInv_InventoryGrid* Grid,UButton* Button);
+	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
 };
