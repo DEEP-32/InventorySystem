@@ -32,27 +32,38 @@ void UInventorySubsystem::Deinitialize() {
 	Super::Deinitialize();
 }
 
-UUserWidget* UInventorySubsystem::GetMouseWidget(bool bVisible) {
-
-	if (!Config.MouseIconData)
-	{
+UUserWidget* UInventorySubsystem::GetMouseWidget(EInv_ItemCategory Category, bool bVisible) {
+	if (!Config.MouseIconData){
 		UE_LOG(LogInventory, Error, TEXT("InventorySubsystem::MouseIconData is null. Please assign MouseIconData in project settings or defaults."));
 		return nullptr;
 	}
 
-	TSubclassOf<UUserWidget> WidgetClass = Config.MouseIconData->GetCursorWidgetClass(bVisible);
-	if (!WidgetClass)
-	{
-		UE_LOG(LogInventory, Error, TEXT("InventorySubsystem: Cursor WidgetClass for %s is null. Check CustomMouseIconData."), bVisible ? TEXT("visible") : TEXT("invisible"));
-		return nullptr;
+	FCachedMouseWidgetsEntry* CachedMouseWidgetsEntry = CachedCategoryMouseWidgets.Find(Category);
+	
+	if (CachedMouseWidgetsEntry == nullptr) {
+		const FCustomMouseIconDataEntry& MouseIconDataEntry = Config.MouseIconData->GetMouseIconDataForItem(Category);
+		//there is no cached entry for this category, create one
+
+		UUserWidget* VisibleCursorWidget = CreateWidget<UUserWidget>(
+			GetWorld(),
+			MouseIconDataEntry.VisibleCursorWidgetClass
+		);
+
+		UUserWidget* InVisibleCursorWidget = CreateWidget<UUserWidget>(
+			GetWorld(),
+			MouseIconDataEntry.InvisibleCursorWidgetClass
+		);
+		
+		CachedMouseWidgetsEntry = &CachedCategoryMouseWidgets.Add(Category, FCachedMouseWidgetsEntry(
+			VisibleCursorWidget,
+			InVisibleCursorWidget
+		));
+
+		CachedCategoryMouseWidgets.Add(Category,*CachedMouseWidgetsEntry);
 	}
 
-	UUserWidget*& CachedRef = bVisible ? VisibleMouseWidget : InvisibleMouseWidget;
-	if (CachedRef == nullptr)
-	{
-		UE_LOG(LogInventory, Warning, TEXT("Creating widget for %s state for first time and caching it"), bVisible ? TEXT("visible") : TEXT("invisible"));
-		CachedRef = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
-	}
-
-	return CachedRef;
+	//we have filled the required pair of widget for this category if not already done so
+	return bVisible ? CachedMouseWidgetsEntry->VisibleWidget : CachedMouseWidgetsEntry->InvisibleWidget;
+		
 }
+

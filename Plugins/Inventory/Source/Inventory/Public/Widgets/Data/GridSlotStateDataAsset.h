@@ -16,7 +16,7 @@ struct FSlateBrush;
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType,EditInlineNew,DefaultToInstanced)
 class INVENTORY_API UGridSlotStateDataAsset : public UDataAsset {
 	GENERATED_BODY()
 

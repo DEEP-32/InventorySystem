@@ -703,17 +703,17 @@ void UInv_InventoryGrid::ClearHoverItem() {
 	ShowCursor();
 }
 
-void UInv_InventoryGrid::ShowCursor() {\
+void UInv_InventoryGrid::ShowCursor() {
 	if (!IsValid(GetOwningPlayer())) return;
 	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningPlayer());
-	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(true);
+	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(ItemCategory,true);
 	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,MouseWidget);
 	
 }
 void UInv_InventoryGrid::HideCursor() {
 	if (!IsValid(GetOwningPlayer())) return;
 	UInventorySubsystem* InventorySubsystem = UInv_InventoryStatics::GetInventorySubsystem(GetOwningPlayer());
-	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(false);
+	UUserWidget* MouseWidget = InventorySubsystem->GetMouseWidget(ItemCategory,false);
 	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,MouseWidget);
 }
 
