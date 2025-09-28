@@ -600,7 +600,10 @@ void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPos, const 
 }
 
 void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameter& NewTileParameter) {
-	if (!IsValid(HoveringItem)) return;
+	if (!IsValid(HoveringItem)) {
+		UE_LOG(LogInventory,Warning,TEXT("HOVER TEST : hovering item is not valid, so returning from OnTileParametersUpdated"));
+		return;
+	}
 
 	// get hover item dimension
 	const FIntPoint HoverItemDimensions = HoveringItem->GetGridDimensions();
@@ -764,7 +767,8 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 Index, const FPointerEvent& 
 void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent) {
 	UE_LOG(LogInventory, Log, TEXT("OnGridSlotClicked: GridIndex=%d, Button=%s"), GridIndex, *MouseEvent.GetEffectingButton().ToString());
 
-	if (!GridSlots.IsValidIndex(GridIndex)) return;
+	if (!IsValid(HoveringItem)) return;
+	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
 
 	//clicked at the location that has item in that slot
 	if (CurrentSpaceQuery.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQuery.OriginalIndex)) {
